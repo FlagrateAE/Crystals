@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using System;
+using Crystals.Core;
+using Crystals.Core.Sources;
 
 namespace Crystals.App;
 
@@ -9,8 +11,14 @@ class Program
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        var engine = new Engine();
+        engine.RegisterSource(new MusicSource());
+        engine.Start();
+
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()

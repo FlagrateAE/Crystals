@@ -4,7 +4,7 @@ namespace Crystals.Core.Sources;
 
 public interface ISource
 {
-    public void Start();
+    public Task Start();
     
     public event Action<Color> OnColorChanged;
     

@@ -6,8 +6,8 @@ namespace Crystals.Core;
 
 public class Engine
 {
-    private List<ISource> _sources;
-    private List<IDevice> _devices;
+    private readonly List<ISource> _sources = [];
+    private readonly List<IDevice> _devices = [];
 
     public void RegisterSource(ISource source)
     {
@@ -20,11 +20,11 @@ public class Engine
         _devices.Add(device);
     }
 
-    public void Start()
+    public async Task Start()
     {
         foreach (var source in _sources)
         {
-            source.Start();
+            await source.Start();
         }
 
         foreach (var device in _devices)
