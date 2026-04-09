@@ -1,70 +1,28 @@
-using System.Diagnostics;
-using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
-using Crystals.Core.Models;
-using Crystals.Core.Sources.Services;
+using Windows.Media.Control;
+using Crystals.Core.Utilities;
 
 namespace Crystals.Core.Sources;
 
-public class MusicSource : ISource
+public class MusicSource : BaseGSMTCSource
 {
-    private readonly GSMTCService _gsmtcService = new();
-
-    public async Task Start()
+    protected override async Task HandleNewMediaSession(GlobalSystemMediaTransportControlsSession? session)
     {
-        Console.WriteLine("Starting music source...");
+        await base.HandleNewMediaSession(session);
 
-        _gsmtcService.OnMediaChanged += async void (m) =>
+        if (session == null) return;
+
+        if (await IsMusicSession(session))
         {
-            Console.WriteLine("Media changed: " + m.Title);
-            Console.WriteLine("is music: " + await IsMusic(m));
-        };
-        
-        await _gsmtcService.Start();
+            FollowSession(session);
+            InvokeRequestFocus();
+        }
     }
 
-    public event Action<Color>? OnColorChanged;
-    public Color GetColor() => throw new NotImplementedException();
-
-    private async Task<bool> IsMusic(Media media)
+    private async Task<bool> IsMusicSession(GlobalSystemMediaTransportControlsSession session)
     {
-        const float squareRatioDeviation = 0.05f;
-        
-        var ratio = await GetThumbnailAspectRatio(media.Thumbnail);
-        return Math.Abs(ratio - 1) < squareRatioDeviation;
-    }
+        var props = await session.TryGetMediaPropertiesAsync();
+        if (props == null || string.IsNullOrEmpty(props.Title)) return false;
 
-    private async Task<double> GetThumbnailAspectRatio(IRandomAccessStreamReference thumbnailRef)
-    {
-        try
-        {
-            // 1. Open the native stream
-            using var windowsStream = await thumbnailRef.OpenReadAsync();
-        
-            // 2. Immediately copy it to a managed MemoryStream
-            // This prevents ObjectDisposedException if the OS closes the native stream
-            var memoryStream = new MemoryStream();
-            await windowsStream.AsStreamForRead().CopyToAsync(memoryStream);
-            memoryStream.Position = 0; // Reset position for the decoder
-
-            // 3. Convert back to a WinRT stream for the BitmapDecoder
-            var raStream = memoryStream.AsRandomAccessStream();
-
-            // 4. Create the decoder
-            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(raStream);
-
-            uint width = decoder.PixelWidth;
-            uint height = decoder.PixelHeight;
-
-            if (height == 0) return 0;
-
-            return (double)width / height;
-        }
-        catch (Exception ex)
-        {
-            // Log the error but don't crash the app
-            Console.WriteLine($"Thumbnail error: {ex.Message}");
-            return 0;
-        }
+        return await ImageUtilities.IsThumbnailMusic(props.Thumbnail);
     }
 }

@@ -15,9 +15,9 @@ class Program
     {
         var engine = new Engine();
         engine.RegisterSource(new MusicSource());
-        engine.Start();
+        _ = engine.Start();
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        // BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
