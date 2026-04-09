@@ -41,7 +41,7 @@ public class GSMTCService
         if (_currentSession != null)
         {
             _currentSession.MediaPropertiesChanged += OnMediaPropertiesChanged;
-            
+
             UpdateMediaProperties(_currentSession);
         }
         else
@@ -57,19 +57,15 @@ public class GSMTCService
             var props = await session.TryGetMediaPropertiesAsync();
             if (
                 props == null ||
-                
-                props.Title == null || props.Title.Length == 0 ||
-                
+                string.IsNullOrEmpty(props.Title) ||
                 session.GetPlaybackInfo().PlaybackStatus ==
                 GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused ||
-                
                 props.Title == _lastTitle && props.Artist == _lastArtist
-
             ) return;
-            
+
             _lastTitle = props.Title;
             _lastArtist = props.Artist;
-            
+
             var media = new Media(session.SourceAppUserModelId, props.Title, props.Artist, props.Thumbnail);
             OnMediaChanged.Invoke(media);
         }
