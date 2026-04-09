@@ -11,9 +11,8 @@ public abstract class BaseGSMTCSource : ISource
     private GlobalSystemMediaTransportControlsSessionManager? _manager;
     private GlobalSystemMediaTransportControlsSession? _currentSession;
 
-    // Cache to prevent duplicate event invocations for the same media
-    protected string? _lastTitle;
-    protected string? _lastArtist;
+    private string? _lastTitle;
+    private string? _lastArtist;
 
     public virtual async Task Start()
     {
@@ -27,7 +26,7 @@ public abstract class BaseGSMTCSource : ISource
     protected virtual Task HandleNewMediaSession(GlobalSystemMediaTransportControlsSession? session)
     {
         if (session == null || session == _currentSession) return Task.CompletedTask;
-
+        
         _currentSession?.MediaPropertiesChanged -= OnMediaPropertiesChanged;
         _currentSession?.PlaybackInfoChanged -= OnPlaybackInfoChanged;
         return Task.CompletedTask;
@@ -79,6 +78,13 @@ public abstract class BaseGSMTCSource : ISource
         _currentSession.PlaybackInfoChanged += OnPlaybackInfoChanged;
         
         OnMediaPropertiesChanged(session, null);
+    }
+
+    protected void UnfollowCurrentSession()
+    {
+        _currentSession?.MediaPropertiesChanged -= OnMediaPropertiesChanged;
+        _currentSession?.PlaybackInfoChanged -= OnPlaybackInfoChanged;
+        _currentSession = null;
     }
 
     protected void InvokeRequestFocus() => RequestFocus?.Invoke();

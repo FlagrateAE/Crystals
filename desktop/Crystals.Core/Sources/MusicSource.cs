@@ -16,6 +16,11 @@ public class MusicSource : BaseGSMTCSource
             FollowSession(session);
             InvokeRequestFocus();
         }
+        else
+        {
+            Console.WriteLine("Not a music session");
+            UnfollowCurrentSession();
+        }
     }
 
     private async Task<bool> IsMusicSession(GlobalSystemMediaTransportControlsSession session)
