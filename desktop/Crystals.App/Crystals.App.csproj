@@ -22,4 +22,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Crystals.Core\Crystals.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
 </Project>
