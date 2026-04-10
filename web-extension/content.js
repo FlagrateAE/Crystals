@@ -5,19 +5,19 @@ let trackChangeTimeout = null;
 
 function extractMediaData() {
     let payload = {
-        title: document.title.replace(" - Spotify", "").trim(),
-        artist: "Unknown Artist",
-        thumbnail: ""
+        Title: document.title.replace(" - Spotify", "").trim(),
+        Artist: "Unknown Artist",
+        Thumbnail: ""
     };
 
     // Approach 1: The Native Media Session API (Bulletproof for modern players)
     if ('mediaSession' in navigator && navigator.mediaSession.metadata) {
         const meta = navigator.mediaSession.metadata;
-        payload.title = meta.title || payload.title;
-        payload.artist = meta.artist || payload.artist;
+        payload.Title = meta.title || payload.Title;
+        payload.Artist = meta.artist || payload.Artist;
         
         if (meta.artwork && meta.artwork.length > 0) {
-            payload.thumbnail = meta.artwork[meta.artwork.length - 1].src;
+            payload.Thumbnail = meta.artwork[meta.artwork.length - 1].src;
         }
     } else {
         // Approach 2: DOM Scraping Fallback specifically for Spotify's web player structure
@@ -25,15 +25,17 @@ function extractMediaData() {
         const artistEl = document.querySelector('[data-testid="context-item-info-artist"]');
         const imgEl = document.querySelector('img[data-testid="cover-art-image"]');
 
-        if (titleEl) payload.title = titleEl.textContent;
-        if (artistEl) payload.artist = artistEl.textContent;
-        if (imgEl) payload.thumbnail = imgEl.src;
+        if (titleEl) payload.Title = titleEl.textContent;
+        if (artistEl) payload.Artist = artistEl.textContent;
+        if (imgEl) payload.Thumbnail = imgEl.src;
     }
 
     return payload;
 }
 
 function notifyChange(trackData) {
+    if (trackData.Artist.trim() === "Unknown Artist") return;
+    
     console.log(`[Thousand Eyes] Song change detected:`, trackData);
     
     chrome.runtime.sendMessage({
@@ -54,11 +56,9 @@ const titleObserver = new MutationObserver(() => {
     trackChangeTimeout = setTimeout(() => {
         const trackData = extractMediaData();
 
-        if (trackData.title.trim() === "Spotify - Web Player") return;
-
-        const currentHash = `${trackData.title}-${trackData.artist}`;
+        const currentHash = `${trackData.Title}-${trackData.Artist}`;
         
-        if (currentHash !== lastTrackHash && trackData.title.trim() !== "") {
+        if (currentHash !== lastTrackHash && trackData.Title.trim() !== "") {
             lastTrackHash = currentHash;
             notifyChange(trackData);
         }
@@ -72,8 +72,8 @@ if (targetTitle) {
     
     setTimeout(() => {
         const trackData = extractMediaData();
-        lastTrackHash = `${trackData.title}-${trackData.artist}`;
-        if(trackData.title) notifyChange(trackData);
+        lastTrackHash = `${trackData.Title}-${trackData.Artist}`;
+        if(trackData.Title) notifyChange(trackData);
     }, 1000);
 } else {
     console.warn("[Thousand Eyes] No <title> element found to observe.");

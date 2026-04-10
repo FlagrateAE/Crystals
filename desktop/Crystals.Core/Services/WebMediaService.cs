@@ -59,17 +59,13 @@ public class WebMediaService(int port)
                     using var body = request.InputStream;
                     using var reader = new StreamReader(body, request.ContentEncoding);
                     var jsonPayload = reader.ReadToEnd();
-
+                    
                     try
                     {
                         var media = JsonSerializer.Deserialize<Media>(jsonPayload);
                         if (media == null) throw new JsonException("Invalid JSON payload");
 
-                        Console.WriteLine($"\n[{DateTime.Now:HH:mm:ss}] --- Now Playing ---");
-                        Console.WriteLine($"Title:     {media.Title}");
-                        Console.WriteLine($"Artist:    {media.Artist}");
-                        Console.WriteLine($"Thumbnail: {media.Thumbnail}");
-                        Console.WriteLine("-----------------------------------");
+                        Console.WriteLine(media);
                         
                         OnMediaChanged?.Invoke(media);
                     }
