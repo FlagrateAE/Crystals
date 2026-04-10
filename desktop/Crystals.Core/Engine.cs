@@ -22,8 +22,10 @@ public class Engine
 
     public void Start()
     {
+        Console.WriteLine("Starting engine");
         foreach (var source in _sources)
         {
+            Console.WriteLine($"Starting source {source.GetType().Name}");
             source.Start();
         }
 

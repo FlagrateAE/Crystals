@@ -20,6 +20,7 @@ class Program
         
         var engine = new Engine();
         engine.RegisterSource(new MusicSource(webMediaService));
+        Console.WriteLine("Starting engine");
         engine.Start();
 
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);

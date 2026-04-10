@@ -21,7 +21,7 @@ public class WebMediaService(int port)
             Console.WriteLine($"[Listener] Service successfully started.");
             Console.WriteLine($"[Listener] Listening for incoming POST requests on {url}...");
             Console.WriteLine($"[Listener] Press Ctrl+C to exit.\n");
-
+            
             while (true)
             {
                 var context = await listener.GetContextAsync();
@@ -68,6 +68,7 @@ public class WebMediaService(int port)
                         Console.WriteLine(media);
                         
                         OnMediaChanged?.Invoke(media);
+                        Console.WriteLine("Media change event fired.");
                     }
                     catch (JsonException)
                     {
