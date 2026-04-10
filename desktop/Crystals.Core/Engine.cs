@@ -20,11 +20,11 @@ public class Engine
         _devices.Add(device);
     }
 
-    public async Task Start()
+    public void Start()
     {
         foreach (var source in _sources)
         {
-            await source.Start();
+            source.Start();
         }
 
         foreach (var device in _devices)

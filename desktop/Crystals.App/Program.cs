@@ -2,21 +2,25 @@
 using System;
 using System.Threading.Tasks;
 using Crystals.Core;
+using Crystals.Core.Services;
 using Crystals.Core.Sources;
 
 namespace Crystals.App;
 
 class Program
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
+    private const int WebMediaServicePort = 4030;
+    
+    
     [STAThread]
     public static async Task Main(string[] args)
     {
+        var webMediaService = new WebMediaService(WebMediaServicePort);
+        await webMediaService.Start();
+        
         var engine = new Engine();
-        engine.RegisterSource(new MusicSource());
-        await engine.Start();
+        engine.RegisterSource(new MusicSource(webMediaService));
+        engine.Start();
 
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }

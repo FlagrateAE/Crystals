@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Thousand Eyes",
+  "version": "1.0",
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "description": "Monitors media playback and sends to a .NET listener",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://open.spotify.com/*",
+        "https://googleusercontent.com/spotify.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": [
+    "http://localhost:4030/*"
+  ],
+  "permissions": [
+    "storage"
+  ]
+}

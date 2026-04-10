@@ -4,7 +4,7 @@ namespace Crystals.Core.Sources;
 
 public interface ISource
 {
-    public Task Start();
+    public void Start();
 
     public event Action RequestFocus;
     
