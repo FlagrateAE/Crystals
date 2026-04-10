@@ -68,7 +68,6 @@ public class WebMediaService(int port)
                         Console.WriteLine(media);
                         
                         OnMediaChanged?.Invoke(media);
-                        Console.WriteLine("Media change event fired.");
                     }
                     catch (JsonException)
                     {

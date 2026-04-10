@@ -35,11 +35,11 @@ public class Engine
         }
     }
 
-    private void SetColorSmooth(Color color)
+    private void SetColorSmooth(CrystalsColor crystalsColor)
     {
         foreach (var device in _devices)
         {
-            device.SetColorSmooth(color);
+            device.SetColorSmooth(crystalsColor);
         }
     }
 }

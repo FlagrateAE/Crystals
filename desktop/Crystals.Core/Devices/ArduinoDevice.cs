@@ -9,17 +9,17 @@ public class ArduinoDevice : IDevice
         throw new NotImplementedException();
     }
 
-    public void SetColor(Color color)
+    public void SetColor(CrystalsColor crystalsColor)
     {
         throw new NotImplementedException();
     }
 
-    public void SetColorSmooth(Color color)
+    public void SetColorSmooth(CrystalsColor crystalsColor)
     {
         throw new NotImplementedException();
     }
 
-    public Color GetColor()
+    public CrystalsColor GetColor()
     {
         throw new NotImplementedException();
     }

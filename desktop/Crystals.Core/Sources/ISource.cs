@@ -8,6 +8,6 @@ public interface ISource
 
     public event Action RequestFocus;
     
-    public event Action<Color> OnColorChanged;
+    public event Action<CrystalsColor> OnColorChanged;
     
 }

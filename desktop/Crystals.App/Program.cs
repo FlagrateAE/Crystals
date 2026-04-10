@@ -16,7 +16,7 @@ class Program
     public static async Task Main(string[] args)
     {
         var webMediaService = new WebMediaService(WebMediaServicePort);
-        await webMediaService.Start();
+        _ = Task.Run(webMediaService.Start);
         
         var engine = new Engine();
         engine.RegisterSource(new MusicSource(webMediaService));

@@ -1,31 +1,25 @@
+using System.Drawing;
+using ColorThiefDotNet;
 using Crystals.Core.Models;
-using SkiaSharp;
-using NetPalette;
 
 namespace Crystals.Core.Utilities;
 
 public static class ColorExtractionUtility
 {
+    private static readonly ColorThief ColorThief = new();
     private static readonly HttpClient HttpClient = new();
     
     public static async Task<Palette> GetPaletteFromUrl(string url)
     {
-        Console.WriteLine($"Downloading {url}");
         var data = await HttpClient.GetByteArrayAsync(url);
-        Console.WriteLine($"Downloaded {data.Length} bytes from {url}");
         using var managedStream = new MemoryStream(data);
-        using var bitmap = SKBitmap.Decode(managedStream);
-        Console.WriteLine($"Decoded {bitmap.Width}x{bitmap.Height} bitmap");
+        using var bitmap = new Bitmap(managedStream);
         return Extract(bitmap);
     }
     
-    private static Palette Extract(SKBitmap bitmap)
+    private static Palette Extract(Bitmap bitmap)
     {
-        var gen = PaletteGenerator.FromBitmap(bitmap, maximumColorCount: 16);
-        return new Palette(
-            gen.DominantColor, 
-            gen.VibrantColor, gen.LightVibrantColor, gen.DarkVibrantColor,
-            gen.MutedColor, gen.LightMutedColor, gen.DarkVibrantColor
-        );
+        var rawPalette = ColorThief.GetPalette(bitmap);
+        return new Palette(rawPalette);
     }
 }
