@@ -6,8 +6,6 @@ public interface IDevice
 {
     public void Start();
     
-    public void SetColor(CrystalsColor crystalsColor);
-    public void SetColorSmooth(CrystalsColor crystalsColor);
-
-    public CrystalsColor GetColor();
+    public void SetColor(CrystalsColor color);
+    public void SetColorSmooth(CrystalsColor color);
 }

@@ -5,7 +5,7 @@ namespace Crystals.Core.Models;
 
 public class CrystalsColor(Color color)
 {
-    private Color RGB { get; } = color;
+    public Color RGB { get; } = color;
     public HSVColor HSV { get; } = new(color);
     
     private float Vibrance => HSV.S * HSV.V;

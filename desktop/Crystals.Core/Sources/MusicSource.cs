@@ -12,6 +12,7 @@ public class MusicSource(WebMediaService service) : ISource
     public void Start()
     {
         service.OnMediaChanged += OnMediaChanged;
+        Console.WriteLine("[MusicSource] Source successfully started.");
     }
 
     private async void OnMediaChanged(Media media)

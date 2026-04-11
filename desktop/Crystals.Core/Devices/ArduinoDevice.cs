@@ -1,26 +1,58 @@
 using Crystals.Core.Models;
+using System.IO.Ports;
 
 namespace Crystals.Core.Devices;
 
-public class ArduinoDevice : IDevice
+public class ArduinoDevice(string portName, int baudRate) : IDevice
 {
+    private const int RwTimeout = 500;
+
+    private SerialPort _serialPort = null!;
+
     public void Start()
     {
-        throw new NotImplementedException();
+        _serialPort = new SerialPort(portName, baudRate);
+
+        _serialPort.Parity = Parity.None;
+        _serialPort.DataBits = 8;
+        _serialPort.StopBits = StopBits.One;
+        _serialPort.Handshake = Handshake.None;
+
+        _serialPort.ReadTimeout = RwTimeout;
+        _serialPort.WriteTimeout = RwTimeout;
+
+        try
+        {
+            _serialPort.Open();
+            _serialPort.DataReceived += OnDataReceived;
+            
+            Console.WriteLine("[ArduinoDevice] Device successfully started");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Couldn't open serial port {portName}: {e.Message}");
+        }
     }
 
-    public void SetColor(CrystalsColor crystalsColor)
+    public void SetColor(CrystalsColor color)
     {
-        throw new NotImplementedException();
+        SendData($"{color.RGB.R}.{color.RGB.G}.{color.RGB.B}.");
     }
 
-    public void SetColorSmooth(CrystalsColor crystalsColor)
+    public void SetColorSmooth(CrystalsColor color)
     {
-        throw new NotImplementedException();
+        SendData($"{color.RGB.R}.{color.RGB.G}.{color.RGB.B}~");
     }
 
-    public CrystalsColor GetColor()
+    private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
     {
-        throw new NotImplementedException();
+        Console.WriteLine($"Received");
+        string data = _serialPort.ReadExisting();
+    }
+
+    private void SendData(string data)
+    {
+        // Console.WriteLine($"Sending: {data}");
+        _serialPort.WriteLine(data);
     }
 }

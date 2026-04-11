@@ -40,7 +40,7 @@ public class Engine
         if (!TryFocusOn(source)) return;
 
         Console.WriteLine($"Color: {color}");
-        SetColor(color);
+        SetColorSmooth(color);
     }
 
     private bool TryFocusOn(ISource source)
@@ -62,13 +62,13 @@ public class Engine
 
         void FocusOn(ISource s) => _focusedSource = s;
     }
-    
-    
-    private void SetColor(CrystalsColor color)
+
+
+    private void SetColorSmooth(CrystalsColor color)
     {
         foreach (var device in _devices)
         {
-            device.SetColor(color);
+            device.SetColorSmooth(color);
         }
     }
 }
