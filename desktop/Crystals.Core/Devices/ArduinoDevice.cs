@@ -1,5 +1,7 @@
+using System.Drawing;
 using Crystals.Core.Models;
 using System.IO.Ports;
+using SkiaSharp;
 
 namespace Crystals.Core.Devices;
 
@@ -25,7 +27,7 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
         {
             _serialPort.Open();
             _serialPort.DataReceived += OnDataReceived;
-            
+
             Console.WriteLine("[ArduinoDevice] Device successfully started");
         }
         catch (Exception e)
@@ -41,7 +43,15 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
 
     public void SetColorSmooth(CrystalsColor color)
     {
-        SendData($"{color.RGB.R}.{color.RGB.G}.{color.RGB.B}~");
+        var targetColor = color;
+
+        if (color.RGB != Color.White)
+        {
+            targetColor = SaturateColor(color);
+        }
+
+        Console.WriteLine($"Setting color: {targetColor}");
+        SendData($"{targetColor.RGB.R}.{targetColor.RGB.G}.{targetColor.RGB.B}~");
     }
 
     private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -54,5 +64,11 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
     {
         // Console.WriteLine($"Sending: {data}");
         _serialPort.WriteLine(data);
+    }
+
+    private CrystalsColor SaturateColor(CrystalsColor inputColor)
+    {
+        var skColor = SKColor.FromHsv(inputColor.HSV.H, 100f, 100f);
+        return new CrystalsColor(Color.FromArgb(skColor.Red, skColor.Green, skColor.Blue));
     }
 }
