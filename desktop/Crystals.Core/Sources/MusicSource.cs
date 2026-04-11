@@ -19,6 +19,7 @@ public class MusicSource(WebMediaService service) : ISource
         var palette = await ColorExtractionUtility.GetPaletteFromUrl(media.Thumbnail);
         
         Console.WriteLine($"{media.Title} by {media.Artist}");
-        Console.WriteLine(palette.ToStringRGBandHSL());
+        Console.WriteLine(palette.ToStringRGBandHSV());
+        Console.WriteLine($"Main color: {palette.GetVibrantColor()}");
     }
 }

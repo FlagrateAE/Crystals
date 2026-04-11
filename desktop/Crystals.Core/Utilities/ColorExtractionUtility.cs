@@ -19,7 +19,7 @@ public static class ColorExtractionUtility
     
     private static Palette Extract(Bitmap bitmap)
     {
-        var rawPalette = ColorThief.GetPalette(bitmap);
+        var rawPalette = ColorThief.GetPalette(bitmap, Palette.Size);
         return new Palette(rawPalette);
     }
 }

@@ -64,8 +64,6 @@ public class WebMediaService(int port)
                     {
                         var media = JsonSerializer.Deserialize<Media>(jsonPayload);
                         if (media == null) throw new JsonException("Invalid JSON payload");
-
-                        Console.WriteLine(media);
                         
                         OnMediaChanged?.Invoke(media);
                     }

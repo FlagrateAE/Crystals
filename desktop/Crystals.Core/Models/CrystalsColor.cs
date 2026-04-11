@@ -1,30 +1,33 @@
 using System.Drawing;
+using Windows.ApplicationModel.Appointments.DataProvider;
 
 namespace Crystals.Core.Models;
 
-public class CrystalsColor
+public class CrystalsColor(Color color)
 {
-    public Color RGB { get; }
-    public HSLColor HSL { get; }
+    private Color RGB { get; } = color;
+    public HSVColor HSV { get; } = new(color);
+    
+    private float Vibrance => HSV.S * HSV.V;
 
-    public CrystalsColor(Color color)
+    public bool IsVibrant()
     {
-        RGB = color;
-        HSL = new HSLColor(color);
+        const float vibranceMonochromeThreshold = 0.15f;
+        return Vibrance is > vibranceMonochromeThreshold and < 1 - vibranceMonochromeThreshold;
     }
-
+    
     public override string ToString()
     {
         return $"\u001b[38;2;{RGB.R};{RGB.G};{RGB.B}m({RGB.R}, {RGB.G}, {RGB.B})\u001b[0m";
     }
 
-    public string ToStringHSL()
+    public string ToStringHSV()
     {
-        return $"\u001b[38;2;{RGB.R};{RGB.G};{RGB.B}m({HSL.H}, {HSL.S}, {HSL.L})\u001b[0m";
+        return $"\u001b[38;2;{RGB.R};{RGB.G};{RGB.B}m({HSV.H}, {HSV.S}, {HSV.V})\u001b[0m";
     }
 
-    public string ToStringRGBandHSL()
+    public string ToStringRGBandHSV()
     {
-        return $"\u001b[38;2;{RGB.R};{RGB.G};{RGB.B}mRGB:({RGB.R}, {RGB.G}, {RGB.B}), HSL: ({HSL.H}, {HSL.S}, {HSL.L})\u001b[0m";
+        return $"\u001b[38;2;{RGB.R};{RGB.G};{RGB.B}mRGB:({RGB.R}, {RGB.G}, {RGB.B}), HSV: ({HSV.H}, {HSV.S}, {HSV.V})\u001b[0m, vibrance {Vibrance} {IsVibrant()}";
     }
 }
