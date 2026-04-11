@@ -6,7 +6,7 @@ public interface ISource
 {
     public void Start();
 
-    public event Action RequestFocus;
+    public int FocusPriority { get; }
     
     public event Action<CrystalsColor> OnColorChanged;
     

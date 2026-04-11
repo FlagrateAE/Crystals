@@ -6,20 +6,19 @@ namespace Crystals.Core.Sources;
 
 public class MusicSource(WebMediaService service) : ISource
 {
+    public int FocusPriority => 1;
+    public event Action<CrystalsColor>? OnColorChanged;
+
     public void Start()
     {
         service.OnMediaChanged += OnMediaChanged;
     }
 
-    public event Action? RequestFocus;
-    public event Action<CrystalsColor>? OnColorChanged;
-
     private async void OnMediaChanged(Media media)
     {
         var palette = await ColorExtractionUtility.GetPaletteFromUrl(media.Thumbnail);
-        
+
         Console.WriteLine($"{media.Title} by {media.Artist}");
-        Console.WriteLine(palette.ToStringRGBandHSV());
-        Console.WriteLine($"Main color: {palette.GetVibrantColor()}");
+        OnColorChanged?.Invoke(palette.GetVibrantColor());
     }
 }

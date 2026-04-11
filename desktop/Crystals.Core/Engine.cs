@@ -9,10 +9,12 @@ public class Engine
     private readonly List<ISource> _sources = [];
     private readonly List<IDevice> _devices = [];
 
+    private ISource? _focusedSource;
+
     public void RegisterSource(ISource source)
     {
         _sources.Add(source);
-        source.OnColorChanged += SetColorSmooth;
+        source.OnColorChanged += color => OnColorChanged(source, color);
     }
 
     public void RegisterDevice(IDevice device)
@@ -22,10 +24,8 @@ public class Engine
 
     public void Start()
     {
-        Console.WriteLine("Starting engine");
         foreach (var source in _sources)
         {
-            Console.WriteLine($"Starting source {source.GetType().Name}");
             source.Start();
         }
 
@@ -35,11 +35,40 @@ public class Engine
         }
     }
 
-    private void SetColorSmooth(CrystalsColor crystalsColor)
+    private void OnColorChanged(ISource source, CrystalsColor color)
+    {
+        if (!TryFocusOn(source)) return;
+
+        Console.WriteLine($"Color: {color}");
+        SetColor(color);
+    }
+
+    private bool TryFocusOn(ISource source)
+    {
+        if (_focusedSource == null)
+        {
+            FocusOn(source);
+            return true;
+        }
+
+        if (_focusedSource == source)
+            return true;
+
+        if (_focusedSource.FocusPriority > source.FocusPriority)
+            return false;
+
+        FocusOn(source);
+        return true;
+
+        void FocusOn(ISource s) => _focusedSource = s;
+    }
+    
+    
+    private void SetColor(CrystalsColor color)
     {
         foreach (var device in _devices)
         {
-            device.SetColorSmooth(crystalsColor);
+            device.SetColor(color);
         }
     }
 }
