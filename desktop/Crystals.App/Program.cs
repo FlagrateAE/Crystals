@@ -1,5 +1,3 @@
-using System.Windows;
-
 namespace Crystals.App;
 
 public class Program
@@ -7,7 +5,7 @@ public class Program
     [STAThread]
     public static void Main()
     {
-        Application app = new Application();
+        var app = new App();
         app.Run(new MainWindow());
     }
 }

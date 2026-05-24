@@ -1,17 +1,24 @@
 using System.Net;
-using System.Text;
 using System.Text.Json;
 using Crystals.Core.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace Crystals.Core.Services;
 
-public class WebMediaService(int port)
+public class WebMediaService : BackgroundService
 {
     public event Action<Media>? OnMediaChanged;
-    
-    public async Task Start()
+
+    private readonly int _port;
+
+    public WebMediaService(int port)
     {
-        var url = $"http://localhost:{port}/";
+        _port = port;
+    }
+    
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        var url = $"http://localhost:{_port}/";
         using var listener = new HttpListener();
         listener.Prefixes.Add(url);
 

@@ -3,12 +3,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Crystals.Core.Models;
+using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.App.Controls;
 
 public class CustomColorPicker : Control
 {
-    private const double StartingHue = 0.0;
+    private const float StartingHue = 0.0f;
 
     public static readonly DependencyProperty HueProperty =
         DependencyProperty.Register(
@@ -23,7 +24,7 @@ public class CustomColorPicker : Control
         set => SetValue(HueProperty, Math.Clamp(value, 0.0, 360.0));
     }
 
-    public CrystalsColor Color { get; }
+    public CrystalsColor Color { get; } = new(StartingHue, 1, 1);
 
     public event EventHandler<double>? HueChanged;
 
@@ -46,7 +47,7 @@ public class CustomColorPicker : Control
         MinWidth = 100;
         Hue = StartingHue;
 
-        Color = CrystalsColor.FromHue(Hue);
+        Color = new CrystalsColor((float)Hue, 1, 1);
     }
 
     protected override void OnRender(DrawingContext drawingContext)
@@ -61,17 +62,20 @@ public class CustomColorPicker : Control
         double innerRadius = outerRadius * (1 - ThicknessRatio);
 
         int segments = 360;
-        double angleStep = 360.0 / segments;
+        float angleStep = 360.0f / segments;
+        
+        var drawingCrystalsColor = new CrystalsColor(0, 1, 1);
 
         for (int i = 0; i < segments; i++)
         {
-            double startAngle = i * angleStep;
-            double endAngle = (i + 1) * angleStep;
+            float startAngle = i * angleStep;
+            float endAngle = (i + 1) * angleStep;
 
-            var color = CrystalsColor.FromHue((startAngle + endAngle) / 2);
+            drawingCrystalsColor.H = (startAngle + endAngle) / 2;
+            var color = ColorConverter.HSVtoRGB(drawingCrystalsColor);
             Geometry arcSegment = CreateRingSegment(center, innerRadius, outerRadius, startAngle - 90, endAngle - 90);
 
-            var brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color.RGB.R, color.RGB.G, color.RGB.B));
+            var brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color.R, color.G, color.B));
             brush.Freeze();
             var pen = new Pen(brush, 0.5);
             pen.Freeze();
@@ -88,9 +92,10 @@ public class CustomColorPicker : Control
 
         drawingContext.DrawEllipse(Brushes.Black, null, thumbCenter, ThumbRadius + 1, ThumbRadius + 1);
         drawingContext.DrawEllipse(Brushes.White, null, thumbCenter, ThumbRadius, ThumbRadius);
-
+        
+        var rgbColor = ColorConverter.HSVtoRGB(Color);
         var internalThumbBrush =
-            new SolidColorBrush(System.Windows.Media.Color.FromRgb(Color.RGB.R, Color.RGB.G, Color.RGB.B));
+            new SolidColorBrush(System.Windows.Media.Color.FromRgb(rgbColor.R, rgbColor.G, rgbColor.B));
         internalThumbBrush.Freeze();
         drawingContext.DrawEllipse(internalThumbBrush, null, thumbCenter, ThumbRadius - 3, ThumbRadius - 3);
     }

@@ -1,7 +1,6 @@
-using System.Drawing;
 using Crystals.Core.Models;
 using System.IO.Ports;
-using SkiaSharp;
+using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.Core.Devices;
 
@@ -38,26 +37,20 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
 
     public void SetColor(CrystalsColor color)
     {
-        SendData($"{color.RGB.R}.{color.RGB.G}.{color.RGB.B}.");
+        var rgb = ColorConverter.HSVtoRGB(color);
+        SendData($"{rgb.R}.{rgb.G}.{rgb.B}.");
     }
 
     public void SetColorSmooth(CrystalsColor color)
     {
-        var targetColor = color;
-
-        if (color.RGB != Color.White)
-        {
-            targetColor = SaturateColor(color);
-        }
-
-        Console.WriteLine($"Setting color: {targetColor}");
-        SendData($"{targetColor.RGB.R}.{targetColor.RGB.G}.{targetColor.RGB.B}~");
+        var rgb = ColorConverter.HSVtoRGB(color);
+        SendData($"{rgb.R}.{rgb.G}.{rgb.B}~");
     }
 
     private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
     {
-        Console.WriteLine($"Received");
         string data = _serialPort.ReadExisting();
+        Console.WriteLine($"Received {data}");
     }
 
     private void SendData(string data)
@@ -66,9 +59,8 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
         _serialPort.WriteLine(data);
     }
 
-    private CrystalsColor SaturateColor(CrystalsColor inputColor)
+    public void Stop()
     {
-        var skColor = SKColor.FromHsv(inputColor.HSV.H, 100f, 100f);
-        return new CrystalsColor(Color.FromArgb(skColor.Red, skColor.Green, skColor.Blue));
+        _serialPort.Close();
     }
 }

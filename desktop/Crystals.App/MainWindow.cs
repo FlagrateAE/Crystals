@@ -26,7 +26,7 @@ public class MainWindow : Window
         
         var statusLabel = new TextBlock
         {
-            Text = $"Selected Color: {hueSelector.Color.RGB}",
+            Text = $"Selected Color: {hueSelector.Color}",
             Foreground = Brushes.White,
             FontSize = 18,
             FontWeight = FontWeights.SemiBold,
