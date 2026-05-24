@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Crystals.App.Controls;
 
-namespace Crystals.App;
+namespace Crystals.App.Windows;
 
 public class MainWindow : Window
 {
