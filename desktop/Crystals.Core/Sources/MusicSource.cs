@@ -19,7 +19,7 @@ public class MusicSource(WebMediaService service) : ISource
     {
         var rgbColor = await ColorExtractionUtility.GetMainColorFromUrl(media.Thumbnail);
         var color = ColorConverter.RGBtoHSV(rgbColor);
-        Console.WriteLine($"{media.Title} by {media.Artist}");
+        Console.WriteLine($"[MusicSource] Now playing: {media.Title} by {media.Artist}");
         OnColorChanged?.Invoke(this, color);
     }
 }

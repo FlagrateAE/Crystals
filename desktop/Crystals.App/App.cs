@@ -27,6 +27,11 @@ public class App : Application
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
             {
+                services.Configure<ConsoleLifetimeOptions>(options => 
+                {
+                    options.SuppressStatusMessages = true;
+                });
+                
                 services.AddHostedService<CrystalsEngine>();
 
                 services.AddSingleton<IMiddleware, VibranceMiddleware>();

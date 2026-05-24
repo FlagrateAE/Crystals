@@ -33,6 +33,8 @@ public class CrystalsEngine(
             device.Start();
         }
 
+        Console.WriteLine("[ENGINE] Engine started\n");
+
         return Task.Delay(Timeout.Infinite, stoppingToken);
     }
 
@@ -43,13 +45,13 @@ public class CrystalsEngine(
         var source = (ISource)sender;
 
         if (!TryFocusOn(source)) return;
-        
+
         var finalColor = color;
         foreach (var middleware in middlewares)
         {
             finalColor = middleware.Process(finalColor);
         }
-        
+
         SetColorSmooth(finalColor);
     }
 
@@ -76,11 +78,13 @@ public class CrystalsEngine(
 
     private void SetColorSmooth(CrystalsColor color)
     {
-        Console.WriteLine($"Setting color {color}");
+        Console.WriteLine($"[ENGINE] Setting color {color}");
         foreach (var device in devices)
         {
             device.SetColorSmooth(color);
         }
+
+        Console.WriteLine("\n");
     }
 
     public override void Dispose()

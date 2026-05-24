@@ -19,6 +19,12 @@ public class CrystalsColor(float h, float s, float v)
     public override string ToString()
     {
         var rgb = ColorConverter.HSVtoRGB(this);
-        return $"\u001b[38;2;{rgb.R};{rgb.G};{rgb.B}m({H}, {S}, {V})\u001b[0m";
+        return $"\u001b[38;2;{rgb.R};{rgb.G};{rgb.B}mHSV({H}°, {S * 100}%, {V * 100}%)\u001b[0m";
+    }
+
+    public string ToStringRGB()
+    {
+        var rgb = ColorConverter.HSVtoRGB(this);
+        return $"\u001b[38;2;{rgb.R};{rgb.G};{rgb.B}mRGB({rgb.R}, {rgb.G}, {rgb.B})\u001b[0m";
     }
 }

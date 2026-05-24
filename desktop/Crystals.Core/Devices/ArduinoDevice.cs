@@ -45,6 +45,7 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
     {
         var rgb = ColorConverter.HSVtoRGB(color);
         SendData($"{rgb.R}.{rgb.G}.{rgb.B}~");
+        Console.WriteLine($"[ArduinoDevice] Set color to {color.ToStringRGB()}");
     }
 
     private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
