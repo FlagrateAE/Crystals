@@ -1,41 +1,13 @@
-﻿using Avalonia;
-using System;
-using System.Threading.Tasks;
-using Crystals.Core;
-using Crystals.Core.Devices;
-using Crystals.Core.Services;
-using Crystals.Core.Sources;
+using System.Windows;
 
 namespace Crystals.App;
 
-class Program
+public class Program
 {
-    private const int WebMediaServicePort = 4030;
-
-    private const string ArduinoPort = "COM3";
-    private const int ArduinoBaudRate = 9600;
-
     [STAThread]
-    public static async Task Main(string[] args)
+    public static void Main()
     {
-        var webMediaService = new WebMediaService(WebMediaServicePort);
-        _ = Task.Run(webMediaService.Start);
-
-        var engine = new Engine();
-
-        engine.RegisterSource(new MusicSource(webMediaService));
-
-        engine.RegisterDevice(new ArduinoDevice(ArduinoPort, ArduinoBaudRate));
-
-        engine.Start();
-
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        Application app = new Application();
+        app.Run(new MainWindow());
     }
-
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace();
 }
