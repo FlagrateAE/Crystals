@@ -5,20 +5,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Crystals.Core.Services;
 
-public class WebMediaService : BackgroundService
+public class WebMediaService(int port) : BackgroundService
 {
     public event Action<Media>? OnMediaChanged;
 
-    private readonly int _port;
-
-    public WebMediaService(int port)
-    {
-        _port = port;
-    }
-    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var url = $"http://localhost:{_port}/";
+        var url = $"http://localhost:{port}/";
         using var listener = new HttpListener();
         listener.Prefixes.Add(url);
 
