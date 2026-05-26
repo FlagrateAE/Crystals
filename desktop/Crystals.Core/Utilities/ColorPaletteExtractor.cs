@@ -4,7 +4,7 @@ using Color = System.Drawing.Color;
 
 namespace Crystals.Core.Utilities;
 
-public static class ColorExtractionUtility
+public static class ColorExtractor
 {
     private static readonly ColorThief ColorThief = new();
     private static readonly HttpClient HttpClient = new();
