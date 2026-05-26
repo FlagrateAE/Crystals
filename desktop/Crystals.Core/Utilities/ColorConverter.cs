@@ -69,7 +69,5 @@ public static class ColorConverter
     {
         var uniColor = new Unicolour(ColourSpace.Rgb255, color.R, color.G, color.B).Hsb;
         return new CrystalsColor((float)uniColor.H, (float)uniColor.S, (float)uniColor.B);
-        
-
     }
 }

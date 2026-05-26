@@ -8,12 +8,12 @@ public class CrystalsColor(float h, float s, float v)
     public float S = s;
     public float V = v;
 
-    private float Vibrance => S * V;
+    private readonly float _vibrance = s * v;
 
     public bool IsVibrant()
     {
         const float vibranceMonochromeThreshold = 0.15f;
-        return Vibrance is > vibranceMonochromeThreshold and < 1 - vibranceMonochromeThreshold;
+        return _vibrance is > vibranceMonochromeThreshold and < 1 - vibranceMonochromeThreshold;
     }
 
     public override string ToString()
