@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Windows.Media.Imaging;
 using Crystals.Core.Models;
 
 namespace Crystals.Core.Sources;
@@ -9,4 +11,6 @@ public interface ISource
     public int FocusPriority { get; }
 
     public event EventHandler<CrystalsColor> OnColorChanged;
+
+    public BitmapSource Icon { get; }
 }

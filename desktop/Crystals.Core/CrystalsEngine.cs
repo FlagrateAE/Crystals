@@ -14,6 +14,8 @@ public class CrystalsEngine(
 {
     private ISource? _focusedSource;
 
+    public event Action<CrystalsColor>? OnEngineColorChanged;
+    public event Action<ISource>? OnSourceFocused;
 
     public void ManualOverride(CrystalsColor color)
     {
@@ -53,6 +55,7 @@ public class CrystalsEngine(
         }
 
         SetColorSmooth(finalColor);
+        OnEngineColorChanged?.Invoke(finalColor);
     }
 
     private bool TryFocusOn(ISource source)
@@ -72,7 +75,11 @@ public class CrystalsEngine(
         FocusOn(source);
         return true;
 
-        void FocusOn(ISource s) => _focusedSource = s;
+        void FocusOn(ISource s)
+        {
+            _focusedSource = s;
+            OnSourceFocused?.Invoke(_focusedSource);
+        }
     }
 
 
