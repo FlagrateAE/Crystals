@@ -1,7 +1,6 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Crystals.Core.Models;
-using Color = System.Drawing.Color;
 
 namespace Crystals.Core.Utilities;
 

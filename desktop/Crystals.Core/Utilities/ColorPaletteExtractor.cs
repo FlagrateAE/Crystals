@@ -1,15 +1,15 @@
 using System.Drawing;
 using ColorThiefDotNet;
-using Color = System.Drawing.Color;
+using Crystals.Core.Models;
 
 namespace Crystals.Core.Utilities;
 
-public static class ColorExtractor
+public static class ColorPaletteExtractor
 {
     private static readonly ColorThief ColorThief = new();
     private static readonly HttpClient HttpClient = new();
 
-    public static async Task<Color> GetMainColorFromUrl(string url)
+    public static async Task<Palette> GetPaletteFromUrl(string url)
     {
         var data = await HttpClient.GetByteArrayAsync(url);
         using var managedStream = new MemoryStream(data);
@@ -17,9 +17,15 @@ public static class ColorExtractor
         return Extract(bitmap);
     }
 
-    private static Color Extract(Bitmap bitmap)
+    private static Palette Extract(Bitmap bitmap)
     {
-        var dominantColor = ColorThief.GetColor(bitmap).Color;
-        return Color.FromArgb(dominantColor.R, dominantColor.G, dominantColor.B);
+        var rawPalette = ColorThief.GetPalette(bitmap, Palette.Size, 20, false);
+
+        foreach (var color in rawPalette)
+        {
+            Console.WriteLine($"[Palette] {ColorConverter.RGBtoHSV(color.Color)}");
+        }
+
+        return new Palette();
     }
 }

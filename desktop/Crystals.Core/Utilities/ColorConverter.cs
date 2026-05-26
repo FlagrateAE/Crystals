@@ -1,4 +1,5 @@
 using Crystals.Core.Models;
+using Wacton.Unicolour;
 using Color = System.Drawing.Color;
 
 namespace Crystals.Core.Utilities;
@@ -64,32 +65,11 @@ public static class ColorConverter
         );
     }
 
-    public static CrystalsColor RGBtoHSV(Color color)
+    public static CrystalsColor RGBtoHSV(ColorThiefDotNet.Color color)
     {
-        var red = color.R / 255.0f;
-        var green = color.B / 255.0f;
-        var blue = color.G / 255.0f;
+        var uniColor = new Unicolour(ColourSpace.Rgb255, color.R, color.G, color.B).Hsb;
+        return new CrystalsColor((float)uniColor.H, (float)uniColor.S, (float)uniColor.B);
+        
 
-        var max = Math.Max(red, Math.Max(green, blue));
-        var min = Math.Min(red, Math.Min(green, blue));
-        var delta = max - min;
-
-        float hue = 0;
-        if (delta != 0)
-        {
-            if (max == red)
-                hue = (green - blue) / delta + (green < blue ? 6 : 0);
-            else if (max == green)
-                hue = (blue - red) / delta + 2;
-            else
-                hue = (red - green) / delta + 4;
-
-            hue *= 60;
-        }
-
-        var saturation = (max == 0) ? 0 : (delta / max);
-        var value = max;
-
-        return new CrystalsColor(hue, saturation, value);
     }
 }

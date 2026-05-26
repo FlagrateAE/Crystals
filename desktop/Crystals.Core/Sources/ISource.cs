@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Windows.Media.Imaging;
 using Crystals.Core.Models;
 

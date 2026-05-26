@@ -1,9 +1,7 @@
-using System.Drawing;
 using System.Windows.Media.Imaging;
 using Crystals.Core.Models;
 using Crystals.Core.Services;
 using Crystals.Core.Utilities;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.Core.Sources;
 
@@ -23,8 +21,8 @@ public class MusicSource(WebMediaService service) : ISource
 
     private async void OnMediaChanged(Media media)
     {
-        var rgbColor = await ColorExtractionUtility.GetMainColorFromUrl(media.Thumbnail);
-        var color = ColorConverter.RGBtoHSV(rgbColor);
+        var palette = await ColorPaletteExtractor.GetPaletteFromUrl(media.Thumbnail);
+        var color = palette.GetVibrantColor();
         Console.WriteLine($"[MusicSource] Now playing: {media.Title} by {media.Artist}");
         OnColorChanged?.Invoke(this, color);
     }

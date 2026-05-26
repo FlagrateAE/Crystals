@@ -1,6 +1,5 @@
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Crystals.App.Windows;
 using Crystals.Core;
@@ -10,7 +9,6 @@ using Crystals.Core.Utilities;
 using Microsoft.Extensions.Hosting;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Tray.Controls;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 using MenuItem = System.Windows.Controls.MenuItem;
 
 namespace Crystals.App.Services;
