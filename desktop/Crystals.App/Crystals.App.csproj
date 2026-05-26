@@ -22,10 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\icon.png" />
-    <Resource Include="Resources\icon.png" />
     <None Remove="Resources\Sources\MusicSource.png" />
     <Resource Include="Resources\Sources\MusicSource.png" />
+    <None Remove="Resources\Icon.png" />
+    <Resource Include="Resources\Icon.png" />
   </ItemGroup>
 
 </Project>

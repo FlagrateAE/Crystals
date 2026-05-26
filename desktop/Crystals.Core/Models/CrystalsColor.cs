@@ -2,7 +2,7 @@ using Crystals.Core.Utilities;
 
 namespace Crystals.Core.Models;
 
-public class CrystalsColor(float h, float s, float v)
+public class CrystalsColor(float h, float s, float v) : IEquatable<CrystalsColor>
 {
     public float H = h;
     public float S = s;
@@ -26,6 +26,11 @@ public class CrystalsColor(float h, float s, float v)
     {
         var rgb = ColorConverter.HSVtoRGB(this);
         return $"\u001b[38;2;{rgb.R};{rgb.G};{rgb.B}mRGB({rgb.R}, {rgb.G}, {rgb.B})\u001b[0m";
+    }
+    
+    public bool Equals(CrystalsColor? other)
+    {
+        return other is not null && H == other.H && S == other.S && V == other.V;
     }
 
     public static CrystalsColor White => new(0, 0, 1);

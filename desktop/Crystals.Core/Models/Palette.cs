@@ -1,6 +1,3 @@
-using ColorThiefDotNet;
-using Crystals.Core.Utilities;
-
 namespace Crystals.Core.Models;
 
 public readonly struct Palette(List<CrystalsColor> colors)

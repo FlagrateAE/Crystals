@@ -50,6 +50,7 @@ public class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        MainWindow = _host.Services.GetRequiredService<MainWindow>();
         await _host.StartAsync();
     }
 
