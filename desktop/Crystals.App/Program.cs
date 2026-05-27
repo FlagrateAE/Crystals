@@ -1,7 +1,5 @@
 namespace Crystals.App;
 
-using Windows;
-
 public class Program
 {
     [STAThread]

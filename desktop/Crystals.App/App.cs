@@ -1,6 +1,6 @@
 using System.Windows;
 using Crystals.App.Services;
-using Crystals.App.Windows;
+using Crystals.App.Windows.MainWindow;
 using Crystals.Core;
 using Crystals.Core.Devices;
 using Crystals.Core.Middlewares;
@@ -8,6 +8,8 @@ using Crystals.Core.Services;
 using Crystals.Core.Sources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Markup;
 
 namespace Crystals.App;
 
@@ -23,19 +25,22 @@ public class App : Application
     {
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+        Resources.MergedDictionaries.Add(new ThemesDictionary { Theme = ApplicationTheme.Dark });
+        Resources.MergedDictionaries.Add(new ControlsDictionary());
+
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
             {
                 services.Configure<ConsoleLifetimeOptions>(options => { options.SuppressStatusMessages = true; });
-                
-                
+
+
                 services.AddSingleton<CrystalsEngine>();
                 services.AddHostedService(p => p.GetRequiredService<CrystalsEngine>());
 
                 services.AddSingleton<MainWindow>();
                 services.AddHostedService<TrayIconService>();
                 services.AddHostedService<HotkeyService>();
-                
+
                 services.AddSingleton<IMiddleware, VibranceMiddleware>();
 
                 services.AddSingleton(_ => new WebMediaService(WebMediaPort));
@@ -51,6 +56,7 @@ public class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        ApplicationThemeManager.Apply(ApplicationTheme.Dark);
         MainWindow = _host.Services.GetRequiredService<MainWindow>();
         await _host.StartAsync();
     }

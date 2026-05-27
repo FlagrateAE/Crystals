@@ -1,15 +1,16 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using Crystals.App.Windows;
+using Crystals.App.Windows.MainWindow;
 using Crystals.Core.Utilities;
 using Microsoft.Extensions.Hosting;
 
 namespace Crystals.App.Services;
 
-public class HotkeyService(MainWindow mainWindow, IntPtr hwnd) : BackgroundService
+public class HotkeyService(MainWindow mainWindow) : BackgroundService
 {
     private const int HotkeyId = 9000;
+    private readonly IntPtr _hwnd;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -22,7 +23,7 @@ public class HotkeyService(MainWindow mainWindow, IntPtr hwnd) : BackgroundServi
         Application.Current.Dispatcher.Invoke(() =>
         {
             ComponentDispatcher.ThreadFilterMessage -= OnMessage;
-            Win32Hotkeys.UnregisterHotKey(hwnd, HotkeyId);
+            Win32Hotkeys.UnregisterHotKey(_hwnd, HotkeyId);
         });
 
         await Task.CompletedTask;
@@ -40,7 +41,7 @@ public class HotkeyService(MainWindow mainWindow, IntPtr hwnd) : BackgroundServi
     private void RegisterHotkey()
     {
         bool success = Win32Hotkeys.RegisterHotKey(
-            hwnd, HotkeyId,
+            _hwnd, HotkeyId,
             Win32Hotkeys.MOD_WIN | Win32Hotkeys.MOD_ALT | Win32Hotkeys.MOD_SHIFT, 0x7B
         );
 
