@@ -15,7 +15,7 @@ public partial class MainWindow
             Title = "Flagrate Crystals",
             Icon = new ImageIcon
             {
-                Source = IconLoader.LoadDefaultIcon(128)
+                Source = ImageLoader.LoadDefaultIcon(128)
             },
             ShowMaximize = false,
             ShowMinimize = false,

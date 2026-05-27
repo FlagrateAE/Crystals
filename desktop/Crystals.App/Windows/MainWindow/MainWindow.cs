@@ -16,7 +16,7 @@ public partial class MainWindow : FluentWindow
     public MainWindow(CrystalsEngine engine)
     {
         Title = "Flagrate Crystals";
-        Icon = IconLoader.LoadDefaultIcon(128);
+        Icon = ImageLoader.LoadDefaultIcon(128);
 
         Width = WindowWidth;
         MinWidth = WindowWidth;

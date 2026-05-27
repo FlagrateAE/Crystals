@@ -11,6 +11,7 @@ public class MusicSource(WebMediaService service) : ISource
     public int FocusPriority => 1;
     public BitmapSource SourceIcon { get; } = BitmapFrame.Create(IconUri);
     public ISourceModel? CurrentSource => service.CurrentMedia;
+    public CrystalsColor? CurrentColor { get; private set; }
     public event EventHandler<CrystalsColor>? OnColorChanged;
 
     private static readonly Uri IconUri = new("pack://application:,,,/Resources/Sources/MusicSource.png");
@@ -25,6 +26,7 @@ public class MusicSource(WebMediaService service) : ISource
     {
         var palette = ColorPaletteExtractor.Extract(media.Image);
         var color = palette.GetVibrantColor();
+        CurrentColor = color;
         Console.WriteLine($"[MusicSource] Now playing: {media.Name} by {media.Description}");
         OnColorChanged?.Invoke(this, color);
     }

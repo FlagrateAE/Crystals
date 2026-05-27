@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Media;
 using Crystals.App.Services;
 using Crystals.App.Windows.MainWindow;
 using Crystals.Core;
@@ -9,12 +10,15 @@ using Crystals.Core.Sources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 using Wpf.Ui.Markup;
 
 namespace Crystals.App;
 
 public class App : Application
 {
+    private const string FontFamily = "Candara";
+    
     private const int WebMediaPort = 4030;
     private const string ArduinoPort = "COM3";
     private const int ArduinoBaudRate = 9600;
@@ -27,6 +31,14 @@ public class App : Application
 
         Resources.MergedDictionaries.Add(new ThemesDictionary { Theme = ApplicationTheme.Dark });
         Resources.MergedDictionaries.Add(new ControlsDictionary());
+        
+        TextBlock.FontFamilyProperty.OverrideMetadata(
+            typeof(TextBlock), 
+            new FrameworkPropertyMetadata(new FontFamily(FontFamily)));
+        TextBlock.FontWeightProperty.OverrideMetadata(
+            typeof(TextBlock),
+            new FrameworkPropertyMetadata(FontWeights.Thin)
+            );
 
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -51,6 +63,8 @@ public class App : Application
                 services.AddSingleton<IDevice, ArduinoDevice>(_ => new ArduinoDevice(ArduinoPort, ArduinoBaudRate));
             })
             .Build();
+        
+        
     }
 
     protected override async void OnStartup(StartupEventArgs e)

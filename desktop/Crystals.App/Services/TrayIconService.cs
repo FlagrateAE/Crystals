@@ -61,7 +61,7 @@ public class TrayIconService : BackgroundService
             TooltipText = "Flagrate Crystals",
             Visibility = Visibility.Visible
         };
-        SetIcon(IconLoader.LoadDefaultIcon(64));
+        SetIcon(ImageLoader.LoadDefaultIcon(64));
 
         var contextMenu = new ContextMenu();
 

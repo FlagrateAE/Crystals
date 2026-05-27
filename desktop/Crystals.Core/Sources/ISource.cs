@@ -11,5 +11,6 @@ public interface ISource
     public int FocusPriority { get; }
     public BitmapSource SourceIcon { get; }
     public ISourceModel? CurrentSource { get; }
+    public CrystalsColor CurrentColor { get; }
     public event EventHandler<CrystalsColor> OnColorChanged;
 }

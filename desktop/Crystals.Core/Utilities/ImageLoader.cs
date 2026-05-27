@@ -2,7 +2,7 @@ using System.Windows.Media.Imaging;
 
 namespace Crystals.Core.Utilities;
 
-public static class IconLoader
+public static class ImageLoader
 {
     public readonly static Uri IconUri = new("pack://application:,,,/Crystals.App;component/Resources/Icon.png");
 

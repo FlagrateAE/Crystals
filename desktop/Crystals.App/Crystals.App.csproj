@@ -26,6 +26,8 @@
     <Resource Include="Resources\Sources\MusicSource.png" />
     <None Remove="Resources\Icon.png" />
     <Resource Include="Resources\Icon.png" />
+    <None Remove="Resources\Sources\Default.png" />
+    <Resource Include="Resources\Sources\Default.png" />
   </ItemGroup>
 
 </Project>
