@@ -2,6 +2,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Crystals.Core;
+using Crystals.Core.Models;
+using Crystals.Core.Sources;
 using Crystals.Core.Utilities;
 using Color = System.Windows.Media.Color;
 using Image = Wpf.Ui.Controls.Image;
@@ -21,8 +23,7 @@ public sealed class DevicesPanel : Border
     public DevicesPanel(CrystalsEngine engine)
     {
         _engine = engine;
-        _engine.OnEngineColorChanged += _ => OnEngineStateChanged();
-        _engine.OnSourceFocused += _ => OnEngineStateChanged();
+        _engine.OnStateChanged += OnEngineStateChanged;
 
         Background = new SolidColorBrush(new Color { R = 41, G = 41, B = 41, A = 150 });
         CornerRadius = new CornerRadius(16);
@@ -42,7 +43,7 @@ public sealed class DevicesPanel : Border
         _content.Children.Add(_image);
     }
 
-    private void OnEngineStateChanged()
+    private void OnEngineStateChanged(ISource? source, CrystalsColor color)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {

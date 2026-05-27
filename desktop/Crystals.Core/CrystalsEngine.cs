@@ -1,4 +1,6 @@
-﻿using Crystals.Core.Devices;
+﻿using System.Drawing.Printing;
+using System.Windows.Controls.Ribbon;
+using Crystals.Core.Devices;
 using Crystals.Core.Middlewares;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
@@ -13,9 +15,8 @@ public class CrystalsEngine(
 ) : BackgroundService
 {
     public ISource? FocusedSource { get; private set; }
-
-    public event Action<CrystalsColor>? OnEngineColorChanged;
-    public event Action<ISource>? OnSourceFocused;
+    
+    public event Action<ISource?, CrystalsColor> OnStateChanged;
 
     public void ManualOverride(CrystalsColor color)
     {
@@ -46,7 +47,9 @@ public class CrystalsEngine(
 
         var source = (ISource)sender;
 
-        if (!TryFocusOn(source)) return;
+        var focusedState = TryFocusOn(source);
+
+        if (focusedState == FocusedState.FailedLowPriority) return;
 
         var finalColor = color;
         foreach (var middleware in middlewares)
@@ -55,31 +58,30 @@ public class CrystalsEngine(
         }
 
         SetColorSmooth(finalColor);
-        OnEngineColorChanged?.Invoke(finalColor);
+
+        var sentSource = focusedState == FocusedState.New ? source : null;
+        var sentColor = finalColor;
+        OnStateChanged?.Invoke(sentSource, sentColor);
     }
 
-    private bool TryFocusOn(ISource source)
+    private FocusedState TryFocusOn(ISource source)
     {
         if (FocusedSource == null)
         {
             FocusOn(source);
-            return true;
+            return FocusedState.New;
         }
 
         if (FocusedSource == source)
-            return true;
+            return FocusedState.Same;
 
         if (FocusedSource.FocusPriority > source.FocusPriority)
-            return false;
+            return FocusedState.FailedLowPriority;
 
         FocusOn(source);
-        return true;
+        return FocusedState.New;
 
-        void FocusOn(ISource s)
-        {
-            FocusedSource = s;
-            OnSourceFocused?.Invoke(FocusedSource);
-        }
+        void FocusOn(ISource s) => FocusedSource = s;
     }
 
 
@@ -107,5 +109,12 @@ public class CrystalsEngine(
         }
 
         base.Dispose();
+    }
+
+    private enum FocusedState
+    {
+        New,
+        Same,
+        FailedLowPriority
     }
 }

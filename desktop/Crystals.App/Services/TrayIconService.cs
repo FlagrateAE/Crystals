@@ -15,13 +15,11 @@ namespace Crystals.App.Services;
 
 public class TrayIconService : BackgroundService
 {
-    private readonly Uri _defaultIconUri = new("pack://application:,,,/Resources/Icon.png");
-
     private readonly CrystalsEngine _engine;
     private readonly MainWindow _mainWindow;
 
     private NotifyIcon? _trayIcon;
-    private BitmapSource? _iconImage;
+    private BitmapSource _iconImage;
 
     private bool _isExiting;
 
@@ -30,8 +28,7 @@ public class TrayIconService : BackgroundService
         _engine = engine;
         _mainWindow = mainWindow;
 
-        _engine.OnSourceFocused += OnEngineSourceFocused;
-        _engine.OnEngineColorChanged += OnEngineColorChanged;
+        _engine.OnStateChanged += OnEngineStateChanged;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -103,14 +100,13 @@ public class TrayIconService : BackgroundService
     }
 
 
-    private void OnEngineSourceFocused(ISource source)
+    private void OnEngineStateChanged(ISource? source, CrystalsColor color)
     {
-        Application.Current.Dispatcher.Invoke(() => { SetIcon(source.SourceIcon); });
-    }
-
-    private void OnEngineColorChanged(CrystalsColor color)
-    {
-        Application.Current.Dispatcher.Invoke(() => { SetIcon(DrawingHelper.RecolorIcon(_iconImage!, color)); });
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var newIcon = DrawingHelper.RecolorIcon(source != null ? source.SourceIcon : _iconImage, color);
+            SetIcon(newIcon);
+        });
     }
 
     private void SetIcon(BitmapSource icon)
