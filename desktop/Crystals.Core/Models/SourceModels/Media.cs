@@ -1,7 +1,6 @@
 using System.Drawing;
-using Crystals.Core.Models.SourceModels;
 
-namespace Crystals.Core.Models;
+namespace Crystals.Core.Models.SourceModels;
 
 public class Media(string title, string artist, Bitmap thumbnail) : ISourceModel
 {

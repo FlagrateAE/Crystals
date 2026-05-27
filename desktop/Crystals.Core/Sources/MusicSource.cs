@@ -1,5 +1,6 @@
 using System.Windows.Media.Imaging;
 using Crystals.Core.Models;
+using Crystals.Core.Models.SourceModels;
 using Crystals.Core.Services;
 using Crystals.Core.Utilities;
 
@@ -9,7 +10,7 @@ public class MusicSource(WebMediaService service) : ISource
 {
     public int FocusPriority => 1;
     public BitmapSource SourceIcon { get; } = BitmapFrame.Create(IconUri);
-    public Media? CurrentMusic => service.CurrentMedia;
+    public ISourceModel? CurrentSource => service.CurrentMedia;
     public event EventHandler<CrystalsColor>? OnColorChanged;
 
     private static readonly Uri IconUri = new("pack://application:,,,/Resources/Sources/MusicSource.png");
