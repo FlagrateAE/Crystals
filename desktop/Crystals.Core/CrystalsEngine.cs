@@ -20,7 +20,7 @@ public class CrystalsEngine(
 
     public void ManualOverride(CrystalsColor color)
     {
-        SetColorSmooth(color);
+        SetColor(color);
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -82,6 +82,17 @@ public class CrystalsEngine(
         return FocusedState.New;
 
         void FocusOn(ISource s) => FocusedSource = s;
+    }
+    
+    private void SetColor(CrystalsColor color)
+    {
+        Console.WriteLine($"[ENGINE] Setting color {color}");
+        foreach (var device in devices)
+        {
+            device.SetColor(color);
+        }
+
+        Console.WriteLine("\n");
     }
 
 

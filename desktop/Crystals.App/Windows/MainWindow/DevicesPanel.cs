@@ -107,7 +107,7 @@ public sealed class DevicesPanel : Border, IDisposable
             {
                 _sourceIcon.Source = newSource.SourceIcon;
             }
-            
+
             var focusedSource = _engine.FocusedSource!;
             var currentSourceModel = focusedSource.CurrentSource!;
             var colorRgb = ColorConverter.HSVtoRGB(focusedSource.CurrentColor);

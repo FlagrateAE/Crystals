@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -7,47 +8,32 @@ using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.App.Controls;
 
-public class CustomColorPicker : Control
+public class CrystalsColorPicker : Control
 {
     private const float StartingHue = 0.0f;
 
-    public static readonly DependencyProperty HueProperty =
-        DependencyProperty.Register(
-            nameof(Hue),
-            typeof(double),
-            typeof(CustomColorPicker),
-            new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender, OnHueChanged));
+    private double _hue;
 
-    private double Hue
-    {
-        get => (double)GetValue(HueProperty);
-        set => SetValue(HueProperty, Math.Clamp(value, 0.0, 360.0));
-    }
+    private CrystalsColor Color { get; }
 
-    public CrystalsColor Color { get; } = new(StartingHue, 1, 1);
-
-    public event EventHandler<double>? HueChanged;
-
-    private static void OnHueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is CustomColorPicker picker)
-        {
-            picker.HueChanged?.Invoke(picker, (double)e.NewValue);
-        }
-    }
+    public event Action<CrystalsColor>? OnColorChanged;
 
     private const double ThicknessRatio = 0.5;
     private const double ThumbRadius = 8.0;
     private bool _isDragging;
 
-    public CustomColorPicker()
+    private readonly Stopwatch _throttleStopwatch = new();
+    private const int ThrottleIntervalMs = 50; 
+
+    public CrystalsColorPicker()
     {
         Focusable = true;
         MinHeight = 100;
         MinWidth = 100;
-        Hue = StartingHue;
+        _hue = StartingHue;
 
-        Color = new CrystalsColor((float)Hue, 1, 1);
+        Color = new CrystalsColor((float)_hue, 1, 1);
+        _throttleStopwatch.Start();
     }
 
     protected override void OnRender(DrawingContext drawingContext)
@@ -83,7 +69,7 @@ public class CustomColorPicker : Control
             drawingContext.DrawGeometry(brush, pen, arcSegment);
         }
 
-        double thumbAngleRad = (Hue - 90) * Math.PI / 180.0;
+        double thumbAngleRad = (_hue - 90) * Math.PI / 180.0;
         double middleRadius = (innerRadius + outerRadius) / 2;
         Point thumbCenter = new Point(
             center.X + middleRadius * Math.Cos(thumbAngleRad),
@@ -130,7 +116,7 @@ public class CustomColorPicker : Control
         {
             CaptureMouse();
             _isDragging = true;
-            UpdateHueFromMouse(e.GetPosition(this));
+            UpdateHueFromMouse(e.GetPosition(this), forceUpdate: true);
             e.Handled = true;
         }
     }
@@ -140,7 +126,7 @@ public class CustomColorPicker : Control
         base.OnMouseMove(e);
         if (_isDragging)
         {
-            UpdateHueFromMouse(e.GetPosition(this));
+            UpdateHueFromMouse(e.GetPosition(this), forceUpdate: false);
             e.Handled = true;
         }
     }
@@ -152,11 +138,12 @@ public class CustomColorPicker : Control
         {
             _isDragging = false;
             ReleaseMouseCapture();
+            UpdateHueFromMouse(e.GetPosition(this), forceUpdate: true);
             e.Handled = true;
         }
     }
 
-    private void UpdateHueFromMouse(Point mousePos)
+    private void UpdateHueFromMouse(Point mousePos, bool forceUpdate)
     {
         var center = new Point(RenderSize.Width / 2, RenderSize.Height / 2);
         var delta = mousePos - center;
@@ -166,6 +153,15 @@ public class CustomColorPicker : Control
         var hue = angleDeg + 90.0;
         if (hue < 0) hue += 360.0;
 
-        Hue = hue;
+        _hue = hue;
+        Color.H = (float)_hue;
+        
+        InvalidateVisual();
+
+        if (forceUpdate || _throttleStopwatch.ElapsedMilliseconds >= ThrottleIntervalMs)
+        {
+            OnColorChanged?.Invoke(Color);
+            _throttleStopwatch.Restart();
+        }
     }
 }

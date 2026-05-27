@@ -30,26 +30,6 @@ public partial class MainWindow : FluentWindow
         ResizeMode = ResizeMode.NoResize;
         WindowBackdropType = WindowBackdropType.Mica;
 
-        var hueSelector = new CustomColorPicker
-        {
-            Width = 250,
-            Height = 250,
-            Margin = new Thickness(20),
-            HorizontalAlignment = HorizontalAlignment.Center
-        };
-
-        var statusLabel = new TextBlock
-        {
-            Text = $"Selected Hue: {hueSelector.Color}",
-            FontSize = 18,
-            FontWeight = FontWeights.SemiBold,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            Margin = new Thickness(10),
-            Appearance = TextColor.Primary
-        };
-
-        hueSelector.HueChanged += (_, e) => { statusLabel.Text = $"Selected Hue: {e:F0}°"; };
-
         var root = new Grid();
         // root.ShowGridLines = true;
         root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -57,7 +37,6 @@ public partial class MainWindow : FluentWindow
 
         var titleBar = TitleBar();
         Grid.SetRow(titleBar, 0);
-
 
         var content = new Grid();
         content.ShowGridLines = true;
@@ -68,6 +47,10 @@ public partial class MainWindow : FluentWindow
         var devicesPanel = new DevicesPanel(engine);
         Grid.SetColumn(devicesPanel, 0);
         content.Children.Add(devicesPanel);
+        
+        var sourcesPanel = new SourcesPanel(engine);
+        Grid.SetColumn(sourcesPanel, 1);
+        content.Children.Add(sourcesPanel);
 
         root.Children.Add(titleBar);
         root.Children.Add(content);
