@@ -1,7 +1,5 @@
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Crystals.App.Windows;
 using Crystals.Core;
@@ -24,8 +22,7 @@ public class TrayIconService : BackgroundService
 
     private NotifyIcon? _trayIcon;
     private BitmapSource? _iconImage;
-    private IntPtr _hwnd;
-    private const int HotkeyId = 9000;
+
     private bool _isExiting;
 
     public TrayIconService(CrystalsEngine engine, MainWindow mainWindow)
@@ -40,7 +37,6 @@ public class TrayIconService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         Application.Current.Dispatcher.Invoke(InitializeIcon);
-        Application.Current.Dispatcher.Invoke(RegisterHotkey);
         await Task.CompletedTask;
     }
 
@@ -48,9 +44,6 @@ public class TrayIconService : BackgroundService
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            ComponentDispatcher.ThreadFilterMessage -= OnMessage;
-            Win32Hotkeys.UnregisterHotKey(_hwnd, HotkeyId);
-
             if (_trayIcon == null) return;
             _trayIcon.Unregister();
             _trayIcon.Dispose();
@@ -109,21 +102,6 @@ public class TrayIconService : BackgroundService
         _trayIcon.Register();
     }
 
-    private void RegisterHotkey()
-    {
-        bool success = Win32Hotkeys.RegisterHotKey(
-            _hwnd, HotkeyId,
-            Win32Hotkeys.MOD_WIN | Win32Hotkeys.MOD_ALT | Win32Hotkeys.MOD_SHIFT, 0x7B
-        );
-
-        if (!success)
-        {
-            int error = Marshal.GetLastWin32Error();
-            Console.WriteLine($"Failed to register hotkey. Error code: {error}");
-        }
-
-        ComponentDispatcher.ThreadFilterMessage += OnMessage;
-    }
 
     private void OnEngineSourceFocused(ISource source)
     {
@@ -133,15 +111,6 @@ public class TrayIconService : BackgroundService
     private void OnEngineColorChanged(CrystalsColor color)
     {
         Application.Current.Dispatcher.Invoke(() => { SetIcon(DrawingHelper.RecolorIcon(_iconImage!, color)); });
-    }
-
-    private void OnMessage(ref MSG msg, ref bool handled)
-    {
-        if (msg.message == Win32Hotkeys.WM_HOTKEY && msg.wParam.ToInt32() == HotkeyId)
-        {
-            ShowMainWindow();
-            handled = true;
-        }
     }
 
     private void SetIcon(BitmapSource icon)

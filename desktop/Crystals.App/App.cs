@@ -34,6 +34,7 @@ public class App : Application
 
                 services.AddSingleton<MainWindow>();
                 services.AddHostedService<TrayIconService>();
+                services.AddHostedService<HotkeyService>();
                 
                 services.AddSingleton<IMiddleware, VibranceMiddleware>();
 

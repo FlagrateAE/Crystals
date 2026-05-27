@@ -1,5 +1,5 @@
-using Crystals.Core.Models;
 using System.IO.Ports;
+using Crystals.Core.Models;
 using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.Core.Devices;
