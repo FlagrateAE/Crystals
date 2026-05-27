@@ -11,5 +11,5 @@ public interface ISource
 
     public event EventHandler<CrystalsColor> OnColorChanged;
 
-    public BitmapSource Icon { get; }
+    public BitmapSource SourceIcon { get; }
 }

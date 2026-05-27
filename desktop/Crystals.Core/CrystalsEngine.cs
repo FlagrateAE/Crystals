@@ -12,7 +12,7 @@ public class CrystalsEngine(
     IEnumerable<IDevice> devices
 ) : BackgroundService
 {
-    private ISource? _focusedSource;
+    public ISource? FocusedSource { get; private set; }
 
     public event Action<CrystalsColor>? OnEngineColorChanged;
     public event Action<ISource>? OnSourceFocused;
@@ -60,16 +60,16 @@ public class CrystalsEngine(
 
     private bool TryFocusOn(ISource source)
     {
-        if (_focusedSource == null)
+        if (FocusedSource == null)
         {
             FocusOn(source);
             return true;
         }
 
-        if (_focusedSource == source)
+        if (FocusedSource == source)
             return true;
 
-        if (_focusedSource.FocusPriority > source.FocusPriority)
+        if (FocusedSource.FocusPriority > source.FocusPriority)
             return false;
 
         FocusOn(source);
@@ -77,8 +77,8 @@ public class CrystalsEngine(
 
         void FocusOn(ISource s)
         {
-            _focusedSource = s;
-            OnSourceFocused?.Invoke(_focusedSource);
+            FocusedSource = s;
+            OnSourceFocused?.Invoke(FocusedSource);
         }
     }
 

@@ -105,7 +105,7 @@ public class TrayIconService : BackgroundService
 
     private void OnEngineSourceFocused(ISource source)
     {
-        Application.Current.Dispatcher.Invoke(() => { SetIcon(source.Icon); });
+        Application.Current.Dispatcher.Invoke(() => { SetIcon(source.SourceIcon); });
     }
 
     private void OnEngineColorChanged(CrystalsColor color)

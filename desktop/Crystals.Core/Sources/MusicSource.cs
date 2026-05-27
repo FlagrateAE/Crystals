@@ -8,7 +8,8 @@ namespace Crystals.Core.Sources;
 public class MusicSource(WebMediaService service) : ISource
 {
     public int FocusPriority => 1;
-    public BitmapSource Icon { get; } = BitmapFrame.Create(IconUri);
+    public BitmapSource SourceIcon { get; } = BitmapFrame.Create(IconUri);
+    public Media? CurrentMusic => service.CurrentMedia;
     public event EventHandler<CrystalsColor>? OnColorChanged;
 
     private static readonly Uri IconUri = new("pack://application:,,,/Resources/Sources/MusicSource.png");
@@ -19,11 +20,11 @@ public class MusicSource(WebMediaService service) : ISource
         Console.WriteLine("[MusicSource] Source successfully started.");
     }
 
-    private async void OnMediaChanged(Media media)
+    private void OnMediaChanged(Media media)
     {
-        var palette = await ColorPaletteExtractor.GetPaletteFromUrl(media.Thumbnail);
+        var palette = ColorPaletteExtractor.Extract(media.Image);
         var color = palette.GetVibrantColor();
-        Console.WriteLine($"[MusicSource] Now playing: {media.Title} by {media.Artist}");
+        Console.WriteLine($"[MusicSource] Now playing: {media.Name} by {media.Description}");
         OnColorChanged?.Invoke(this, color);
     }
 }

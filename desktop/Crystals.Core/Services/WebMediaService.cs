@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Net;
 using System.Text.Json;
 using Crystals.Core.Models;
@@ -8,6 +9,9 @@ namespace Crystals.Core.Services;
 public class WebMediaService(int port) : BackgroundService
 {
     public event Action<Media>? OnMediaChanged;
+    public Media? CurrentMedia { get; private set; }
+
+    private readonly HttpClient _httpClient = new();
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -19,7 +23,7 @@ public class WebMediaService(int port) : BackgroundService
         {
             listener.Start();
             Console.WriteLine($"[WebMediaService] Service successfully started");
-            
+
             while (true)
             {
                 var context = await listener.GetContextAsync();
@@ -34,7 +38,7 @@ public class WebMediaService(int port) : BackgroundService
         }
     }
 
-    private void HandleRequest(HttpListenerContext context)
+    private async Task HandleRequest(HttpListenerContext context)
     {
         var request = context.Request;
         var response = context.Response;
@@ -51,18 +55,20 @@ public class WebMediaService(int port) : BackgroundService
                     response.StatusCode = (int)HttpStatusCode.NoContent;
                     response.Close();
                     return;
-                
+
                 case "POST":
                 {
                     using var body = request.InputStream;
                     using var reader = new StreamReader(body, request.ContentEncoding);
                     var jsonPayload = reader.ReadToEnd();
-                    
+
                     try
                     {
-                        var media = JsonSerializer.Deserialize<Media>(jsonPayload);
-                        if (media == null) throw new JsonException("Invalid JSON payload");
-                        
+                        var mediaDto = JsonSerializer.Deserialize<WebMediaDto>(jsonPayload);
+                        if (mediaDto == null) throw new JsonException("Invalid JSON payload");
+
+                        var media = await CreateFromDto(mediaDto);
+                        CurrentMedia = media;
                         OnMediaChanged?.Invoke(media);
                     }
                     catch (JsonException)
@@ -88,7 +94,7 @@ public class WebMediaService(int port) : BackgroundService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"\n[Error] Processing request failed: {ex.Message}");
+            Console.WriteLine($"\n[Error: {ex.GetType()}] Processing request failed: {ex.Message}");
             response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
         finally
@@ -96,4 +102,23 @@ public class WebMediaService(int port) : BackgroundService
             response.Close();
         }
     }
+
+    private async Task<Media> CreateFromDto(WebMediaDto dto)
+    {
+        using var httpResponse = await _httpClient.GetAsync(dto.Thumbnail);
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            throw new InvalidOperationException(
+                $"Failed to fetch thumbnail. HTTP status code: {httpResponse.StatusCode}"
+            );
+        }
+
+        var data = await httpResponse.Content.ReadAsByteArrayAsync();
+        using var managedStream = new MemoryStream(data);
+        using var bitmap = new Bitmap(managedStream);
+        var processedBitmap = new Bitmap(bitmap);
+        return new Media(dto.Title, dto.Artist, processedBitmap);
+    }
+
+    private record WebMediaDto(string Title, string Artist, string Thumbnail);
 }

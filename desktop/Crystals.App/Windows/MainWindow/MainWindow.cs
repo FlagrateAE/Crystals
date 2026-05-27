@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Crystals.App.Controls;
+using Crystals.Core;
 using Crystals.Core.Utilities;
 using Wpf.Ui.Controls;
 using TextBlock = Wpf.Ui.Controls.TextBlock;
@@ -9,20 +10,25 @@ namespace Crystals.App.Windows.MainWindow;
 
 public partial class MainWindow : FluentWindow
 {
-    public MainWindow()
+    private const int WindowWidth = 1054;
+    private const int WindowHeight = 600;
+
+    public MainWindow(CrystalsEngine engine)
     {
         Title = "Flagrate Crystals";
-        Width = 400;
-        Height = 450;
-        MinWidth = 400;
-        MaxWidth = 400;
-        MinHeight = 450;
-        MaxHeight = 450;
+        Icon = IconLoader.LoadDefaultIcon(128);
+
+        Width = WindowWidth;
+        MinWidth = WindowWidth;
+        MaxWidth = WindowWidth;
+        Height = WindowHeight;
+        MinHeight = WindowHeight;
+        MaxHeight = WindowHeight;
+
         WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        WindowBackdropType = WindowBackdropType.Mica;
         ExtendsContentIntoTitleBar = true;
         ResizeMode = ResizeMode.NoResize;
-        Icon = IconLoader.LoadDefaultIcon(128);
+        WindowBackdropType = WindowBackdropType.Mica;
 
         var hueSelector = new CustomColorPicker
         {
@@ -45,17 +51,23 @@ public partial class MainWindow : FluentWindow
         hueSelector.HueChanged += (_, e) => { statusLabel.Text = $"Selected Hue: {e:F0}°"; };
 
         var root = new Grid();
+        // root.ShowGridLines = true;
         root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
-        var content = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-        content.Children.Add(hueSelector);
-        content.Children.Add(statusLabel);
-
         var titleBar = TitleBar();
-
         Grid.SetRow(titleBar, 0);
+
+
+        var content = new Grid();
+        content.ShowGridLines = true;
+        content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         Grid.SetRow(content, 1);
+
+        var devicesPanel = new DevicesPanel(engine);
+        Grid.SetColumn(devicesPanel, 0);
+        content.Children.Add(devicesPanel);
 
         root.Children.Add(titleBar);
         root.Children.Add(content);
