@@ -104,7 +104,7 @@ public class TrayIconService : BackgroundService
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            var newIcon = DrawingHelper.RecolorIcon(source != null ? source.SourceIcon : _iconImage, color);
+            var newIcon = DrawingHelper.RecolorIcon(source != null ? source.Icon : _iconImage, color);
             SetIcon(newIcon);
         });
     }

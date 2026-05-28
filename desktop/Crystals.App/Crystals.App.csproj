@@ -23,11 +23,18 @@
 
   <ItemGroup>
     <None Remove="Resources\Sources\MusicSource.png" />
-    <Resource Include="Resources\Sources\MusicSource.png" />
     <None Remove="Resources\Icon.png" />
     <Resource Include="Resources\Icon.png" />
     <None Remove="Resources\Sources\Default.png" />
     <Resource Include="Resources\Sources\Default.png" />
+    <None Remove="Resources\Sources\Music.png" />
+    <Resource Include="Resources\Sources\Music.png" />
+    <None Remove="Resources\Devices\Arduino.png" />
+    <Resource Include="Resources\Devices\Arduino.png" />
+    <None Remove="Resources\Devices\Keyboard.png" />
+    <Resource Include="Resources\Devices\Keyboard.png" />
+    <None Remove="Resources\Ok.png" />
+    <Resource Include="Resources\Ok.png" />
   </ItemGroup>
 
 </Project>

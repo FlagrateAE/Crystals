@@ -6,11 +6,11 @@ namespace Crystals.Core.Sources;
 
 public interface ISource
 {
-    public void Start();
-
     public int FocusPriority { get; }
-    public BitmapSource SourceIcon { get; }
+    public BitmapSource Icon { get; }
     public ISourceModel? CurrentSource { get; }
     public CrystalsColor CurrentColor { get; }
     public event EventHandler<CrystalsColor> OnColorChanged;
+
+    public void Start();
 }

@@ -14,8 +14,9 @@ public class CrystalsEngine(
     IEnumerable<IDevice> devices
 ) : BackgroundService
 {
+    public IEnumerable<IDevice> Devices { get; } = devices;
     public ISource? FocusedSource { get; private set; }
-    
+
     public event Action<ISource?, CrystalsColor> OnStateChanged;
 
     public void ManualOverride(CrystalsColor color)
@@ -83,7 +84,7 @@ public class CrystalsEngine(
 
         void FocusOn(ISource s) => FocusedSource = s;
     }
-    
+
     private void SetColor(CrystalsColor color)
     {
         Console.WriteLine($"[ENGINE] Setting color {color}");
@@ -92,7 +93,7 @@ public class CrystalsEngine(
             device.SetColor(color);
         }
 
-        Console.WriteLine("\n");
+        Console.WriteLine("");
     }
 
 
@@ -104,7 +105,7 @@ public class CrystalsEngine(
             device.SetColorSmooth(color);
         }
 
-        Console.WriteLine("\n");
+        Console.WriteLine("");
     }
 
     public override void Dispose()

@@ -1,4 +1,5 @@
 using System.IO.Ports;
+using System.Windows.Media.Imaging;
 using Crystals.Core.Models;
 using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
@@ -6,8 +7,10 @@ namespace Crystals.Core.Devices;
 
 public class ArduinoDevice(string portName, int baudRate) : IDevice
 {
-    private const int RwTimeout = 500;
+    public string Name => "Arduino Uno R3";
+    public BitmapSource Icon { get; } = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Devices/Arduino.png"));
 
+    private const int RwTimeout = 500;
     private SerialPort _serialPort = null!;
 
     public void Start()

@@ -1,13 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Crystals.App.Controls;
 using Crystals.Core;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
-using Crystals.Core.Utilities;
-using Color = System.Windows.Media.Color;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
-using Image = Wpf.Ui.Controls.Image;
+using ListView = Wpf.Ui.Controls.ListView;
 using TextBlock = Wpf.Ui.Controls.TextBlock;
 
 namespace Crystals.App.Windows.MainWindow;
@@ -16,27 +14,19 @@ public sealed class DevicesPanel : Border, IDisposable
 {
     private const int MarginVertical = 40;
     private const int MarginHorizontal = 80;
-
-    private const int ImageSize = 280;
-
-    private readonly Uri _defaultIconUri =
-        new("pack://application:,,,/Crystals.App;component/Resources/Sources/Default.png");
+    private const int ContentWidth = 280;
 
     private readonly CrystalsEngine _engine;
     private readonly SolidColorBrush _borderBrush = new(new Color { R = 63, G = 63, B = 63, A = 255 });
-    private readonly Image _sourceIcon;
-    private readonly Image _image;
-    private readonly TextBlock _title;
-    private readonly TextBlock _description;
+    private readonly CrystalsColorPicker _colorPicker;
+    private readonly ListView _devicesList;
 
     public DevicesPanel(CrystalsEngine engine)
     {
         _engine = engine;
-        _engine.OnStateChanged += OnEngineStateChanged;
 
-        var contentIconWrapper = new Grid();
         var content = new Grid();
-        contentIconWrapper.Children.Add(content);
+        content.ShowGridLines = true;
 
         Background = new SolidColorBrush(new Color { R = 41, G = 41, B = 41, A = 150 });
         CornerRadius = new CornerRadius(16);
@@ -44,82 +34,54 @@ public sealed class DevicesPanel : Border, IDisposable
         BorderThickness = new Thickness(1);
         Padding = new Thickness(16);
         Margin = new Thickness(MarginHorizontal, MarginVertical, MarginHorizontal, MarginVertical);
-        Child = contentIconWrapper;
+        Child = content;
 
-        _sourceIcon = new Image
-        {
-            Width = 30,
-            Height = 30,
-            Stretch = Stretch.Uniform,
-            CornerRadius = new CornerRadius(50),
-            HorizontalAlignment = HorizontalAlignment.Right,
-            VerticalAlignment = VerticalAlignment.Bottom,
-        };
-        contentIconWrapper.Children.Add(_sourceIcon);
-
-        // _content.ShowGridLines = true;
         content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-        content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
-        _image = new Image
+        _colorPicker = new CrystalsColorPicker
         {
-            Width = ImageSize,
-            Height = ImageSize,
-            Stretch = Stretch.Uniform,
-            Margin = new Thickness(25, 25, 25, 20),
-            Source = ImageLoader.LoadFromUri(_defaultIconUri, ImageSize),
-            CornerRadius = new CornerRadius(8),
-            BorderBrush = new SolidColorBrush(new Color { R = 63, G = 63, B = 63, A = 255 }),
-            BorderThickness = new Thickness(1),
-        };
-        Grid.SetRow(_image, 0);
-        content.Children.Add(_image);
-
-        _title = new TextBlock
-        {
-            Text = "None",
+            Width = ContentWidth,
+            Height = ContentWidth,
+            Margin = new Thickness(20),
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontWeight = FontWeights.Normal,
-            FontSize = 24,
+            VerticalAlignment = VerticalAlignment.Top
         };
-        Grid.SetRow(_title, 1);
-        content.Children.Add(_title);
+        _colorPicker.OnColorChanged += engine.ManualOverride;
+        _engine.OnStateChanged += OnEngineStateChanged;
+        Grid.SetRow(_colorPicker, 0);
+        content.Children.Add(_colorPicker);
 
-        _description = new TextBlock
+        _devicesList = new ListView
         {
-            Text = "No device in focus",
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            FontSize = 16,
-            Margin = new Thickness(0, 0, 0, 18),
+            VerticalAlignment = VerticalAlignment.Stretch,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(0),
+            Focusable = false,
         };
-        Grid.SetRow(_description, 2);
-        content.Children.Add(_description);
+        var panelFactory = new FrameworkElementFactory(typeof(StackPanel));
+        panelFactory.SetValue(VerticalAlignmentProperty, VerticalAlignment.Center);
+        panelFactory.SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Stretch);
+        _devicesList.ItemsPanel = new ItemsPanelTemplate(panelFactory);
+        foreach (var device in engine.Devices)
+        {
+            var item = new DeviceListItem(device);
+            _devicesList.Items.Add(item);
+        }
+
+        Grid.SetRow(_devicesList, 1);
+        content.Children.Add(_devicesList);
     }
 
-    private void OnEngineStateChanged(ISource? newSource, CrystalsColor __)
+    private void OnEngineStateChanged(ISource? _, CrystalsColor color)
     {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            if (newSource != null)
-            {
-                _sourceIcon.Source = newSource.SourceIcon;
-            }
-
-            var focusedSource = _engine.FocusedSource!;
-            var currentSourceModel = focusedSource.CurrentSource!;
-            var colorRgb = ColorConverter.HSVtoRGB(focusedSource.CurrentColor);
-            _borderBrush.Color = Color.FromArgb(255, colorRgb.R, colorRgb.G, colorRgb.B);
-            _image.Source = currentSourceModel.Image.ToBitmapSource();
-            _title.Text = currentSourceModel.Name;
-            _description.Text = currentSourceModel.Description;
-        });
+        Application.Current.Dispatcher.Invoke(() => { _colorPicker.Color = color; });
     }
 
     public void Dispose()
     {
+        _colorPicker.OnColorChanged -= _engine.ManualOverride;
         _engine.OnStateChanged -= OnEngineStateChanged;
     }
 }

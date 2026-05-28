@@ -9,13 +9,11 @@ namespace Crystals.Core.Sources;
 public class MusicSource(WebMediaService service) : ISource
 {
     public int FocusPriority => 1;
-    public BitmapSource SourceIcon { get; } = BitmapFrame.Create(IconUri);
+    public BitmapSource Icon { get; } = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Sources/Music.png"));
     public ISourceModel? CurrentSource => service.CurrentMedia;
     public CrystalsColor? CurrentColor { get; private set; }
     public event EventHandler<CrystalsColor>? OnColorChanged;
-
-    private static readonly Uri IconUri = new("pack://application:,,,/Resources/Sources/MusicSource.png");
-
+    
     public void Start()
     {
         service.OnMediaChanged += OnMediaChanged;

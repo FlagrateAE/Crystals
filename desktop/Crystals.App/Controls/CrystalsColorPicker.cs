@@ -14,7 +14,15 @@ public class CrystalsColorPicker : Control
 
     private double _hue;
 
-    private CrystalsColor Color { get; }
+    public CrystalsColor Color
+    {
+        get;
+        set
+        {
+            field = value;
+            SetColor(value);
+        }
+    }
 
     public event Action<CrystalsColor>? OnColorChanged;
 
@@ -23,7 +31,7 @@ public class CrystalsColorPicker : Control
     private bool _isDragging;
 
     private readonly Stopwatch _throttleStopwatch = new();
-    private const int ThrottleIntervalMs = 50; 
+    private const int ThrottleIntervalMs = 50;
 
     public CrystalsColorPicker()
     {
@@ -49,7 +57,7 @@ public class CrystalsColorPicker : Control
 
         int segments = 360;
         float angleStep = 360.0f / segments;
-        
+
         var drawingCrystalsColor = new CrystalsColor(0, 1, 1);
 
         for (int i = 0; i < segments; i++)
@@ -78,7 +86,7 @@ public class CrystalsColorPicker : Control
 
         drawingContext.DrawEllipse(Brushes.Black, null, thumbCenter, ThumbRadius + 1, ThumbRadius + 1);
         drawingContext.DrawEllipse(Brushes.White, null, thumbCenter, ThumbRadius, ThumbRadius);
-        
+
         var rgbColor = ColorConverter.HSVtoRGB(Color);
         var internalThumbBrush =
             new SolidColorBrush(System.Windows.Media.Color.FromRgb(rgbColor.R, rgbColor.G, rgbColor.B));
@@ -155,7 +163,7 @@ public class CrystalsColorPicker : Control
 
         _hue = hue;
         Color.H = (float)_hue;
-        
+
         InvalidateVisual();
 
         if (forceUpdate || _throttleStopwatch.ElapsedMilliseconds >= ThrottleIntervalMs)
@@ -163,5 +171,12 @@ public class CrystalsColorPicker : Control
             OnColorChanged?.Invoke(Color);
             _throttleStopwatch.Restart();
         }
+    }
+
+    private void SetColor(CrystalsColor color)
+    {
+        _hue = color.H;
+        Color.H = (float)_hue;
+        InvalidateVisual();
     }
 }

@@ -44,13 +44,13 @@ public partial class MainWindow : FluentWindow
         content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         Grid.SetRow(content, 1);
 
-        var devicesPanel = new DevicesPanel(engine);
-        Grid.SetColumn(devicesPanel, 0);
-        content.Children.Add(devicesPanel);
-        
         var sourcesPanel = new SourcesPanel(engine);
-        Grid.SetColumn(sourcesPanel, 1);
+        Grid.SetColumn(sourcesPanel, 0);
         content.Children.Add(sourcesPanel);
+
+        var devicesPanel = new DevicesPanel(engine);
+        Grid.SetColumn(devicesPanel, 1);
+        content.Children.Add(devicesPanel);
 
         root.Children.Add(titleBar);
         root.Children.Add(content);
