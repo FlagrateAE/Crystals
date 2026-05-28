@@ -5,8 +5,7 @@ using Crystals.App.Controls;
 using Crystals.Core;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
-using ListView = Wpf.Ui.Controls.ListView;
-using TextBlock = Wpf.Ui.Controls.TextBlock;
+using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.App.Windows.MainWindow;
 
@@ -19,14 +18,12 @@ public sealed class DevicesPanel : Border, IDisposable
     private readonly CrystalsEngine _engine;
     private readonly SolidColorBrush _borderBrush = new(new Color { R = 63, G = 63, B = 63, A = 255 });
     private readonly CrystalsColorPicker _colorPicker;
-    private readonly ListView _devicesList;
 
     public DevicesPanel(CrystalsEngine engine)
     {
         _engine = engine;
 
         var content = new Grid();
-        content.ShowGridLines = true;
 
         Background = new SolidColorBrush(new Color { R = 41, G = 41, B = 41, A = 150 });
         CornerRadius = new CornerRadius(16);
@@ -48,35 +45,41 @@ public sealed class DevicesPanel : Border, IDisposable
             VerticalAlignment = VerticalAlignment.Top
         };
         _colorPicker.OnColorChanged += engine.ManualOverride;
+        _colorPicker.OnColorChanged += SetColor;
         _engine.OnStateChanged += OnEngineStateChanged;
         Grid.SetRow(_colorPicker, 0);
         content.Children.Add(_colorPicker);
 
-        _devicesList = new ListView
+        var devicesList = new StackPanel()
         {
-            VerticalAlignment = VerticalAlignment.Stretch,
+            Orientation = Orientation.Vertical,
+            VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Background = Brushes.Transparent,
-            BorderThickness = new Thickness(0),
-            Focusable = false,
         };
-        var panelFactory = new FrameworkElementFactory(typeof(StackPanel));
-        panelFactory.SetValue(VerticalAlignmentProperty, VerticalAlignment.Center);
-        panelFactory.SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Stretch);
-        _devicesList.ItemsPanel = new ItemsPanelTemplate(panelFactory);
         foreach (var device in engine.Devices)
         {
             var item = new DeviceListItem(device);
-            _devicesList.Items.Add(item);
+            devicesList.Children.Add(item);
         }
 
-        Grid.SetRow(_devicesList, 1);
-        content.Children.Add(_devicesList);
+        Grid.SetRow(devicesList, 1);
+        content.Children.Add(devicesList);
     }
 
     private void OnEngineStateChanged(ISource? _, CrystalsColor color)
     {
         Application.Current.Dispatcher.Invoke(() => { _colorPicker.Color = color; });
+        SetColor(color);
+    }
+
+    private void SetColor(CrystalsColor color)
+    {
+        var rgbColor = ColorConverter.HSVtoRGB(color);
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            _borderBrush.Color = Color.FromArgb(255, rgbColor.R, rgbColor.G, rgbColor.B);
+        });
     }
 
     public void Dispose()

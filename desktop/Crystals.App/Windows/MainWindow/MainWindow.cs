@@ -1,10 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
-using Crystals.App.Controls;
 using Crystals.Core;
 using Crystals.Core.Utilities;
 using Wpf.Ui.Controls;
-using TextBlock = Wpf.Ui.Controls.TextBlock;
 
 namespace Crystals.App.Windows.MainWindow;
 
@@ -31,7 +29,6 @@ public partial class MainWindow : FluentWindow
         WindowBackdropType = WindowBackdropType.Mica;
 
         var root = new Grid();
-        // root.ShowGridLines = true;
         root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
@@ -39,7 +36,6 @@ public partial class MainWindow : FluentWindow
         Grid.SetRow(titleBar, 0);
 
         var content = new Grid();
-        content.ShowGridLines = true;
         content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         content.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         Grid.SetRow(content, 1);

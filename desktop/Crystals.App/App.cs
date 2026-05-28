@@ -1,5 +1,4 @@
 using System.Windows;
-using System.Windows.Media;
 using Crystals.App.Services;
 using Crystals.App.Windows.MainWindow;
 using Crystals.Core;

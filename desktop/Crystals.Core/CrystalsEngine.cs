@@ -1,6 +1,4 @@
-﻿using System.Drawing.Printing;
-using System.Windows.Controls.Ribbon;
-using Crystals.Core.Devices;
+﻿using Crystals.Core.Devices;
 using Crystals.Core.Middlewares;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;

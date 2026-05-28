@@ -17,7 +17,7 @@ public sealed class DeviceListItem : Border
         BorderThickness = new Thickness(1);
         CornerRadius = new CornerRadius(8);
         Padding = new Thickness(8);
-        Margin = new Thickness(0, 4, 0, 4);
+        Margin = new Thickness(20, 4, 20, 4);
         Background = Brushes.Transparent;
 
         MouseEnter += (_, _) => Background = new SolidColorBrush(new Color { R = 63, G = 63, B = 63, A = 255 });
@@ -56,8 +56,8 @@ public sealed class DeviceListItem : Border
         var stateLight = new Image
         {
             Source = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Ok.png")),
-            Width = IconSize,
-            Height = IconSize,
+            Width = IconSize * 0.8f,
+            Height = IconSize * 0.8f,
             Stretch = Stretch.Uniform,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 5, 0)
