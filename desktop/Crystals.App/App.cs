@@ -1,6 +1,6 @@
 using System.Windows;
 using Crystals.App.Services;
-using Crystals.App.Windows.MainWindow;
+using Crystals.App.Windows;
 using Crystals.Core;
 using Crystals.Core.Devices;
 using Crystals.Core.Middlewares;

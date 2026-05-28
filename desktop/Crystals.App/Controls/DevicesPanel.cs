@@ -1,13 +1,12 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Crystals.App.Controls;
 using Crystals.Core;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
 using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
-namespace Crystals.App.Windows.MainWindow;
+namespace Crystals.App.Controls;
 
 public sealed class DevicesPanel : Border, IDisposable
 {

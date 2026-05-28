@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using Crystals.App.Windows.MainWindow;
+using Crystals.App.Windows;
 using Crystals.Core;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
@@ -61,7 +61,7 @@ public class TrayIconService : BackgroundService
             TooltipText = "Flagrate Crystals",
             Visibility = Visibility.Visible
         };
-        SetIcon(ImageLoader.LoadDefaultIcon(64));
+        SetIcon(ImageLoader.LoadFromUri(ImageLoader.IconUris.AE, 64));
 
         var contextMenu = new ContextMenu();
 

@@ -10,7 +10,7 @@ using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 using Image = Wpf.Ui.Controls.Image;
 using TextBlock = Wpf.Ui.Controls.TextBlock;
 
-namespace Crystals.App.Windows.MainWindow;
+namespace Crystals.App.Controls;
 
 public sealed class SourcesPanel : Border, IDisposable
 {
@@ -18,9 +18,6 @@ public sealed class SourcesPanel : Border, IDisposable
     private const int MarginHorizontal = 80;
 
     private const int ImageSize = 280;
-
-    private readonly Uri _defaultIconUri =
-        new("pack://application:,,,/Crystals.App;component/Resources/Sources/Default.png");
 
     private readonly CrystalsEngine _engine;
     private readonly SolidColorBrush _borderBrush = new(new Color { R = 63, G = 63, B = 63, A = 255 });
@@ -68,7 +65,7 @@ public sealed class SourcesPanel : Border, IDisposable
             Height = ImageSize,
             Stretch = Stretch.Uniform,
             Margin = new Thickness(25, 25, 25, 20),
-            Source = ImageLoader.LoadFromUri(_defaultIconUri, ImageSize),
+            Source = ImageLoader.LoadFromUri(ImageLoader.IconUris.Crystals, ImageSize),
             CornerRadius = new CornerRadius(8),
             BorderBrush = new SolidColorBrush(new Color { R = 63, G = 63, B = 63, A = 255 }),
             BorderThickness = new Thickness(1),

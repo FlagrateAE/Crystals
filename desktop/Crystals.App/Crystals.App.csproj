@@ -24,9 +24,7 @@
   <ItemGroup>
     <None Remove="Resources\Sources\MusicSource.png" />
     <None Remove="Resources\Icon.png" />
-    <Resource Include="Resources\Icon.png" />
     <None Remove="Resources\Sources\Default.png" />
-    <Resource Include="Resources\Sources\Default.png" />
     <None Remove="Resources\Sources\Music.png" />
     <Resource Include="Resources\Sources\Music.png" />
     <None Remove="Resources\Devices\Arduino.png" />
@@ -35,6 +33,11 @@
     <Resource Include="Resources\Devices\Keyboard.png" />
     <None Remove="Resources\Ok.png" />
     <Resource Include="Resources\Ok.png" />
+    <None Remove="Resources\Icons\AE.png" />
+    <Resource Include="Resources\Icons\AE.png" />
+    <None Remove="Resources\Icons\Crystals.png" />
+    <Resource Include="Resources\Icons\Crystals.png" />
+    <None Remove="Resources\Icons\Crystals80.png" />
   </ItemGroup>
 
 </Project>

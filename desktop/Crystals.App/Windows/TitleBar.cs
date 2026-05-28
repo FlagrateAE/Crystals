@@ -4,7 +4,7 @@ using System.Windows.Media;
 using Crystals.Core.Utilities;
 using Wpf.Ui.Controls;
 
-namespace Crystals.App.Windows.MainWindow;
+namespace Crystals.App.Windows;
 
 public partial class MainWindow
 {
@@ -15,7 +15,7 @@ public partial class MainWindow
             Title = "Flagrate Crystals",
             Icon = new ImageIcon
             {
-                Source = ImageLoader.LoadDefaultIcon(128)
+                Source = ImageLoader.LoadFromUri(ImageLoader.IconUris.AE, 128),
             },
             ShowMaximize = false,
             ShowMinimize = false,

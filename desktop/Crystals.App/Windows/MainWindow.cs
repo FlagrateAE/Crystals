@@ -1,10 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
+using Crystals.App.Controls;
 using Crystals.Core;
 using Crystals.Core.Utilities;
 using Wpf.Ui.Controls;
 
-namespace Crystals.App.Windows.MainWindow;
+namespace Crystals.App.Windows;
 
 public partial class MainWindow : FluentWindow
 {
@@ -14,7 +15,7 @@ public partial class MainWindow : FluentWindow
     public MainWindow(CrystalsEngine engine)
     {
         Title = "Flagrate Crystals";
-        Icon = ImageLoader.LoadDefaultIcon(128);
+        Icon = ImageLoader.LoadFromUri(ImageLoader.IconUris.AE, 128);
 
         Width = WindowWidth;
         MinWidth = WindowWidth;
@@ -47,6 +48,10 @@ public partial class MainWindow : FluentWindow
         var devicesPanel = new DevicesPanel(engine);
         Grid.SetColumn(devicesPanel, 1);
         content.Children.Add(devicesPanel);
+
+        var engineConnector = new EngineConnector(sourcesPanel, engine, devicesPanel);
+        Grid.SetColumnSpan(engineConnector, 2);
+        content.Children.Add(engineConnector);
 
         root.Children.Add(titleBar);
         root.Children.Add(content);

@@ -15,7 +15,7 @@ public class CrystalsEngine(
     public IEnumerable<IDevice> Devices { get; } = devices;
     public ISource? FocusedSource { get; private set; }
 
-    public event Action<ISource?, CrystalsColor> OnStateChanged;
+    public event Action<ISource?, CrystalsColor>? OnStateChanged;
 
     public void ManualOverride(CrystalsColor color)
     {

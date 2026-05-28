@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using Crystals.App.Windows.MainWindow;
+using Crystals.App.Windows;
 using Crystals.Core.Utilities;
 using Microsoft.Extensions.Hosting;
 
