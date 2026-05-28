@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -17,8 +18,13 @@ public class EngineConnector : Grid, IDisposable
     private const int IconSize = 70;
 
     private readonly CrystalsEngine _engine;
+    private readonly SolidColorBrush _sourceLineBrush = new(new Color { R = 63, G = 63, B = 63, A = 255 });
     private readonly SolidColorBrush _borderBrush = new(new Color { R = 63, G = 63, B = 63, A = 255 });
+    private readonly SolidColorBrush _deviceLineBrush = new(new Color { R = 63, G = 63, B = 63, A = 255 });
     private readonly Canvas _linesCanvas;
+    private readonly Image _icon;
+    private readonly BitmapSource _defaultIconSource;
+    private readonly BitmapSource _manualOverrideResetIconSource;
     private Line _sourceLine;
     private Line _deviceLine;
 
@@ -26,10 +32,14 @@ public class EngineConnector : Grid, IDisposable
     {
         _engine = engine;
         engine.OnStateChanged += OnEngineStateChanged;
+        engine.OnManualOverride += OnEngineManualOverride;
 
-        var icon = new Image
+        _defaultIconSource = BitmapFrame.Create(ImageLoader.IconUris.Crystals);
+        _manualOverrideResetIconSource = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Reset.png"));
+
+        _icon = new Image
         {
-            Source = BitmapFrame.Create(ImageLoader.IconUris.Crystals),
+            Source = _defaultIconSource,
             Width = IconSize,
             Height = IconSize,
             VerticalAlignment = VerticalAlignment.Center,
@@ -39,7 +49,8 @@ public class EngineConnector : Grid, IDisposable
             BorderBrush = _borderBrush,
             BorderThickness = new Thickness(1),
         };
-        RenderOptions.SetBitmapScalingMode(icon, BitmapScalingMode.HighQuality);
+        _icon.MouseUp += OnIconClick;
+        RenderOptions.SetBitmapScalingMode(_icon, BitmapScalingMode.HighQuality);
 
         _linesCanvas = new Canvas
         {
@@ -47,18 +58,36 @@ public class EngineConnector : Grid, IDisposable
             VerticalAlignment = VerticalAlignment.Stretch,
         };
 
-        Application.Current.MainWindow!.Loaded += (_, _) => DrawLines(sourcesPanel, icon, devicesPanel);
+        Application.Current.MainWindow!.Loaded += (_, _) => DrawLines(sourcesPanel, _icon, devicesPanel);
     }
 
     private void OnEngineStateChanged(ISource? _, CrystalsColor newColor)
     {
         var sourceColorRgb = ColorConverter.HSVtoRGB(_engine.FocusedSource!.CurrentColor);
         var deviceColorRgb = ColorConverter.HSVtoRGB(newColor);
-
         Application.Current.Dispatcher.Invoke(() =>
         {
+            _icon.Source = _defaultIconSource;
+            _sourceLineBrush.Color = Color.FromArgb(255, sourceColorRgb.R, sourceColorRgb.G, sourceColorRgb.B);
             _borderBrush.Color = Color.FromArgb(255, deviceColorRgb.R, deviceColorRgb.G, deviceColorRgb.B);
+            _deviceLineBrush.Color = Color.FromArgb(255, deviceColorRgb.R, deviceColorRgb.G, deviceColorRgb.B);
         });
+    }
+
+    private void OnEngineManualOverride(CrystalsColor color)
+    {
+        if (_engine.FocusedSource == null) return;
+        _icon.Source = _manualOverrideResetIconSource;
+        var deviceColorRgb = ColorConverter.HSVtoRGB(color);
+        _deviceLineBrush.Color = Color.FromArgb(255, deviceColorRgb.R, deviceColorRgb.G, deviceColorRgb.B);
+    }
+
+    private void OnIconClick(object sender, MouseButtonEventArgs e)
+    {
+        if (_icon.Source == _defaultIconSource) return;
+
+        _engine.ResetManualOverride();
+        _icon.Source = _defaultIconSource;
     }
 
     private void DrawLines(SourcesPanel sourcesPanel, Image icon, DevicesPanel devicesPanel)
@@ -70,7 +99,7 @@ public class EngineConnector : Grid, IDisposable
             Y1 = sourceLineStartPoint.Y,
             X2 = sourceLineEndPoint.X,
             Y2 = sourceLineEndPoint.Y,
-            Stroke = _borderBrush,
+            Stroke = _sourceLineBrush,
             StrokeThickness = 2
         };
         _linesCanvas.Children.Add(_sourceLine);
@@ -82,7 +111,7 @@ public class EngineConnector : Grid, IDisposable
             Y1 = deviceLineStartPoint.Y,
             X2 = deviceLineEndPoint.X,
             Y2 = deviceLineEndPoint.Y,
-            Stroke = _borderBrush,
+            Stroke = _deviceLineBrush,
             StrokeThickness = 2
         };
         _linesCanvas.Children.Add(_deviceLine);

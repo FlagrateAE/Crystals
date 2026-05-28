@@ -27,11 +27,13 @@ public class CrystalsColor(float h, float s, float v) : IEquatable<CrystalsColor
         var rgb = ColorConverter.HSVtoRGB(this);
         return $"\u001b[38;2;{rgb.R};{rgb.G};{rgb.B}mRGB({rgb.R}, {rgb.G}, {rgb.B})\u001b[0m";
     }
-    
+
     public bool Equals(CrystalsColor? other)
     {
         return other is not null && H == other.H && S == other.S && V == other.V;
     }
+
+    public CrystalsColor Clone() => new(H, S, V);
 
     public static CrystalsColor White => new(0, 0, 1);
 }

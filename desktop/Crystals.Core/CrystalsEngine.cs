@@ -16,10 +16,30 @@ public class CrystalsEngine(
     public ISource? FocusedSource { get; private set; }
 
     public event Action<ISource?, CrystalsColor>? OnStateChanged;
+    public event Action<CrystalsColor>? OnManualOverride;
 
     public void ManualOverride(CrystalsColor color)
     {
-        SetColor(color);
+        var finalColor = color;
+        foreach (var middleware in middlewares)
+        {
+            finalColor = middleware.Process(finalColor);
+        }
+
+        SetColor(finalColor);
+        OnManualOverride?.Invoke(finalColor);
+    }
+
+    public void ResetManualOverride()
+    {
+        var resetColor = FocusedSource!.CurrentColor.Clone();
+        foreach (var middleware in middlewares)
+        {
+            resetColor = middleware.Process(resetColor);
+        }
+
+        SetColorSmooth(resetColor);
+        OnStateChanged?.Invoke(null, resetColor);
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -50,7 +70,7 @@ public class CrystalsEngine(
 
         if (focusedState == FocusedState.FailedLowPriority) return;
 
-        var finalColor = color;
+        var finalColor = color.Clone();
         foreach (var middleware in middlewares)
         {
             finalColor = middleware.Process(finalColor);
