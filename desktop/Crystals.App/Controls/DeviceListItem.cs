@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Crystals.Core.Devices;
+using Crystals.Core.Utilities;
 using Image = Wpf.Ui.Controls.Image;
 
 namespace Crystals.App.Controls;
@@ -10,6 +11,8 @@ namespace Crystals.App.Controls;
 public sealed class DeviceListItem : Border
 {
     private const int IconSize = 32;
+
+    private readonly Image _statusIcon;
 
     public DeviceListItem(IDevice device)
     {
@@ -53,16 +56,23 @@ public sealed class DeviceListItem : Border
         Grid.SetColumn(name, 1);
         gridContent.Children.Add(name);
 
-        var stateLight = new Image
+        _statusIcon = new Image
         {
-            Source = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Ok.png")),
             Width = IconSize * 0.8f,
             Height = IconSize * 0.8f,
             Stretch = Stretch.Uniform,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 5, 0)
         };
-        Grid.SetColumn(stateLight, 2);
-        gridContent.Children.Add(stateLight);
+        SetActive(false);
+        Grid.SetColumn(_statusIcon, 2);
+        gridContent.Children.Add(_statusIcon);
+    }
+
+    public void SetActive(bool active)
+    {
+        var iconUri = active ? ImageLoader.IconUris.Ok : ImageLoader.IconUris.Error;
+
+        Application.Current.Dispatcher.Invoke(() => { _statusIcon.Source = BitmapFrame.Create(iconUri); });
     }
 }

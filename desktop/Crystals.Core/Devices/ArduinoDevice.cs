@@ -8,12 +8,14 @@ namespace Crystals.Core.Devices;
 public class ArduinoDevice(string portName, int baudRate) : IDevice
 {
     public string Name => "Arduino Uno R3";
-    public BitmapSource Icon { get; } = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Devices/Arduino.png"));
+
+    public BitmapSource Icon { get; } =
+        BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Devices/Arduino.png"));
 
     private const int RwTimeout = 500;
     private SerialPort _serialPort = null!;
 
-    public void Start()
+    public bool Start()
     {
         _serialPort = new SerialPort(portName, baudRate);
 
@@ -31,10 +33,12 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
             _serialPort.DataReceived += OnDataReceived;
 
             Console.WriteLine("[ArduinoDevice] Device successfully started");
+            return true;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Couldn't open serial port {portName}: {e.Message}");
+            Console.WriteLine($"[ArduinoDevice] Couldn't start! {e.Message}");
+            return false;
         }
     }
 

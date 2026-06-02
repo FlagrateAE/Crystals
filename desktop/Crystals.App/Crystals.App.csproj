@@ -40,6 +40,8 @@
     <None Remove="Resources\Icons\Crystals80.png" />
     <None Remove="Resources\Reset.png" />
     <Resource Include="Resources\Reset.png" />
+    <None Remove="Resources\Error.png" />
+    <Resource Include="Resources\Error.png" />
   </ItemGroup>
 
 </Project>

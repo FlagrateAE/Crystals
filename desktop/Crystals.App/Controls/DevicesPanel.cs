@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Crystals.Core;
+using Crystals.Core.Devices;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
 using ColorConverter = Crystals.Core.Utilities.ColorConverter;
@@ -17,10 +18,12 @@ public sealed class DevicesPanel : Border, IDisposable
     private readonly CrystalsEngine _engine;
     private readonly SolidColorBrush _borderBrush = new(new Color { R = 63, G = 63, B = 63, A = 255 });
     private readonly CrystalsColorPicker _colorPicker;
+    private readonly Dictionary<IDevice, DeviceListItem> _deviceItems = new();
 
     public DevicesPanel(CrystalsEngine engine)
     {
         _engine = engine;
+        _engine.OnDeviceSetActive += OnDeviceSetActive;
 
         var content = new Grid();
 
@@ -56,14 +59,21 @@ public sealed class DevicesPanel : Border, IDisposable
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Background = Brushes.Transparent,
         };
+
         foreach (var device in engine.Devices)
         {
             var item = new DeviceListItem(device);
             devicesList.Children.Add(item);
+            _deviceItems.Add(device, item);
         }
 
         Grid.SetRow(devicesList, 1);
         content.Children.Add(devicesList);
+    }
+
+    private void OnDeviceSetActive(IDevice device, bool active)
+    {
+        _deviceItems[device].SetActive(active);
     }
 
     private void OnEngineStateChanged(ISource? _, CrystalsColor color)

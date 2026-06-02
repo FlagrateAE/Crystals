@@ -12,8 +12,10 @@ public class CrystalsEngine(
     IEnumerable<IDevice> devices
 ) : BackgroundService
 {
-    public IEnumerable<IDevice> Devices { get; } = devices;
+    public List<IDevice> Devices { get; } = devices.ToList();
     public ISource? FocusedSource { get; private set; }
+
+    public event Action<IDevice, bool>? OnDeviceSetActive;
 
     public event Action<ISource?, CrystalsColor>? OnStateChanged;
     public event Action<CrystalsColor>? OnManualOverride;
@@ -50,12 +52,18 @@ public class CrystalsEngine(
             source.OnColorChanged += OnColorChanged;
         }
 
-        foreach (var device in devices)
+        foreach (var device in Devices.ToList())
         {
-            device.Start();
+            var status = device.Start();
+            if (!status)
+            {
+                Devices.Remove(device);
+            }
+
+            OnDeviceSetActive?.Invoke(device, status);
         }
 
-        Console.WriteLine("[ENGINE] Engine started\n");
+        Console.WriteLine($"[ENGINE] Engine started: {sources.Count()} sources, {Devices.Count} devices\n");
 
         return Task.Delay(Timeout.Infinite, stoppingToken);
     }
@@ -106,7 +114,7 @@ public class CrystalsEngine(
     private void SetColor(CrystalsColor color)
     {
         Console.WriteLine($"[ENGINE] Setting color {color}");
-        foreach (var device in devices)
+        foreach (var device in Devices)
         {
             device.SetColor(color);
         }
@@ -114,11 +122,10 @@ public class CrystalsEngine(
         Console.WriteLine("");
     }
 
-
     private void SetColorSmooth(CrystalsColor color)
     {
         Console.WriteLine($"[ENGINE] Setting color {color}");
-        foreach (var device in devices)
+        foreach (var device in Devices)
         {
             device.SetColorSmooth(color);
         }
@@ -133,7 +140,7 @@ public class CrystalsEngine(
             source.OnColorChanged -= OnColorChanged;
         }
 
-        foreach (var device in devices)
+        foreach (var device in Devices)
         {
             device.Stop();
         }

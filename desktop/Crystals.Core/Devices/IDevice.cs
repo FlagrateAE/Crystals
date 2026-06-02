@@ -8,7 +8,7 @@ public interface IDevice
     public string Name { get; }
     public BitmapSource Icon { get; }
     
-    public void Start();
+    public bool Start();
 
     public void SetColor(CrystalsColor color);
     public void SetColorSmooth(CrystalsColor color);

@@ -23,4 +23,10 @@
     <Compile Remove="Utilities\ColorsExtensions.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="MysticLight_SDK_x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
