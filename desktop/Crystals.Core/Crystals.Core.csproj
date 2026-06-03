@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HidSharp" Version="2.6.4" />
     <PackageReference Include="ksemenenko.ColorThief" Version="1.1.1.4" />
     <PackageReference Include="Magick.NET.Core" Version="14.13.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
@@ -21,12 +22,6 @@
 
   <ItemGroup>
     <Compile Remove="Utilities\ColorsExtensions.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="MysticLight_SDK_x64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

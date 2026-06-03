@@ -52,9 +52,13 @@ public class App : Application
                 services.AddSingleton(_ => new WebMediaService(WebMediaPort));
                 services.AddHostedService(p => p.GetRequiredService<WebMediaService>());
 
+                services.AddSingleton<MysticLightService>();
+                services.AddHostedService(p => p.GetRequiredService<MysticLightService>());
+
                 services.AddSingleton<ISource, MusicSource>();
 
                 services.AddSingleton<IDevice, ArduinoDevice>(_ => new ArduinoDevice(ArduinoPort, ArduinoBaudRate));
+                services.AddSingleton<IDevice, MysticLightDevice>();
             })
             .Build();
     }
