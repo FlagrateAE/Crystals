@@ -5,7 +5,6 @@ using Crystals.Core;
 using Crystals.Core.Devices;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.App.Controls;
 
@@ -24,6 +23,8 @@ public sealed class DevicesPanel : Border, IDisposable
     {
         _engine = engine;
         _engine.OnDeviceSetActive += OnDeviceSetActive;
+        _engine.OnStateChanged += OnEngineStateChanged;
+        _engine.OnManualOverride += OnEngineManualOverride;
 
         var content = new Grid();
 
@@ -47,8 +48,6 @@ public sealed class DevicesPanel : Border, IDisposable
             VerticalAlignment = VerticalAlignment.Top
         };
         _colorPicker.OnColorChanged += engine.ManualOverride;
-        _colorPicker.OnColorChanged += SetColor;
-        _engine.OnStateChanged += OnEngineStateChanged;
         Grid.SetRow(_colorPicker, 0);
         content.Children.Add(_colorPicker);
 
@@ -71,6 +70,11 @@ public sealed class DevicesPanel : Border, IDisposable
         content.Children.Add(devicesList);
     }
 
+    private void OnEngineManualOverride(CrystalsColor color)
+    {
+        SetColor(color);
+    }
+
     private void OnDeviceSetActive(IDevice device, bool active)
     {
         _deviceItems[device].SetActive(active);
@@ -84,11 +88,7 @@ public sealed class DevicesPanel : Border, IDisposable
 
     private void SetColor(CrystalsColor color)
     {
-        var rgbColor = ColorConverter.HSVtoRGB(color);
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            _borderBrush.Color = Color.FromArgb(255, rgbColor.R, rgbColor.G, rgbColor.B);
-        });
+        Application.Current.Dispatcher.Invoke(() => { _borderBrush.Color = color.ToRgb(); });
     }
 
     public void Dispose()

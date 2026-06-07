@@ -76,7 +76,6 @@ public class TrayIconService : BackgroundService
             Application.Current.Shutdown();
         };
 
-        contextMenu.Items.Add(new Separator());
         contextMenu.Items.Add(exitItem);
 
         _trayIcon.Menu = contextMenu;

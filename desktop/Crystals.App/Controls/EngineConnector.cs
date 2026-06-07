@@ -8,7 +8,6 @@ using Crystals.Core;
 using Crystals.Core.Models;
 using Crystals.Core.Sources;
 using Crystals.Core.Utilities;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 using Image = Wpf.Ui.Controls.Image;
 
 namespace Crystals.App.Controls;
@@ -63,14 +62,14 @@ public class EngineConnector : Grid, IDisposable
 
     private void OnEngineStateChanged(ISource? _, CrystalsColor newColor)
     {
-        var sourceColorRgb = ColorConverter.HSVtoRGB(_engine.FocusedSource!.CurrentColor);
-        var deviceColorRgb = ColorConverter.HSVtoRGB(newColor);
+        var sourceColor = _engine.FocusedSource!.CurrentColor.ToRgb();
+        var deviceColor = newColor.ToRgb();
         Application.Current.Dispatcher.Invoke(() =>
         {
             _icon.Source = _defaultIconSource;
-            _sourceLineBrush.Color = Color.FromArgb(255, sourceColorRgb.R, sourceColorRgb.G, sourceColorRgb.B);
-            _borderBrush.Color = Color.FromArgb(255, deviceColorRgb.R, deviceColorRgb.G, deviceColorRgb.B);
-            _deviceLineBrush.Color = Color.FromArgb(255, deviceColorRgb.R, deviceColorRgb.G, deviceColorRgb.B);
+            _sourceLineBrush.Color = sourceColor;
+            _borderBrush.Color = deviceColor;
+            _deviceLineBrush.Color = deviceColor;
         });
     }
 
@@ -78,8 +77,7 @@ public class EngineConnector : Grid, IDisposable
     {
         if (_engine.FocusedSource == null) return;
         _icon.Source = _manualOverrideResetIconSource;
-        var deviceColorRgb = ColorConverter.HSVtoRGB(color);
-        _deviceLineBrush.Color = Color.FromArgb(255, deviceColorRgb.R, deviceColorRgb.G, deviceColorRgb.B);
+        _deviceLineBrush.Color = color.ToRgb();
     }
 
     private void OnIconClick(object sender, MouseButtonEventArgs e)

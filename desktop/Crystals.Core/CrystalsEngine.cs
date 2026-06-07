@@ -34,7 +34,7 @@ public class CrystalsEngine(
 
     public void ResetManualOverride()
     {
-        var resetColor = FocusedSource!.CurrentColor.Clone();
+        var resetColor = FocusedSource!.CurrentColor;
         foreach (var middleware in middlewares)
         {
             resetColor = middleware.Process(resetColor);
@@ -78,16 +78,15 @@ public class CrystalsEngine(
 
         if (focusedState == FocusedState.FailedLowPriority) return;
 
-        var finalColor = color.Clone();
         foreach (var middleware in middlewares)
         {
-            finalColor = middleware.Process(finalColor);
+            color = middleware.Process(color);
         }
 
-        SetColorSmooth(finalColor);
+        SetColorSmooth(color);
 
         var sentSource = focusedState == FocusedState.New ? source : null;
-        var sentColor = finalColor;
+        var sentColor = color;
         OnStateChanged?.Invoke(sentSource, sentColor);
     }
 

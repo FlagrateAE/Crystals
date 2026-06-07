@@ -11,7 +11,7 @@ public static class ColorPaletteExtractor
     public static Palette Extract(Bitmap bitmap)
     {
         var rawPalette = ColorThief.GetPalette(bitmap, Palette.Size, 20, false);
-        var modelPalette = rawPalette.Select(c => ColorConverter.RGBtoHSV(c.Color)).ToList();
+        var modelPalette = rawPalette.Select(c => new CrystalsColor(c.Color.R, c.Color.G, c.Color.B)).ToList();
         return new Palette(modelPalette);
     }
 }

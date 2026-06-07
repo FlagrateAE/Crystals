@@ -19,7 +19,7 @@ public class MysticLightDevice(MysticLightService service) : IDevice
 
     public void SetColor(CrystalsColor color)
     {
-        var rgb = ColorConverter.HSVtoRGB(color);
+        var rgb = color.ToRgb();
         service.SetStaticColor(Ms1565Zone.AllZones, rgb.R, rgb.G, rgb.B);
     }
 

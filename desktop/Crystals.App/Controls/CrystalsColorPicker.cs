@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Crystals.Core.Models;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.App.Controls;
 
@@ -20,7 +19,8 @@ public class CrystalsColorPicker : Control
         set
         {
             field = value;
-            SetColor(value);
+            _hue = value.H;
+            InvalidateVisual();
         }
     }
 
@@ -60,15 +60,15 @@ public class CrystalsColorPicker : Control
         int segments = 360;
         float angleStep = 360.0f / segments;
 
-        var drawingCrystalsColor = new CrystalsColor(0, 1, 1);
+        var drawingCrystalsColor = new CrystalsColor(0f, 1f, 1f);
 
         for (int i = 0; i < segments; i++)
         {
             float startAngle = i * angleStep;
             float endAngle = (i + 1) * angleStep;
 
-            drawingCrystalsColor.H = (startAngle + endAngle) / 2;
-            var color = ColorConverter.HSVtoRGB(drawingCrystalsColor);
+            drawingCrystalsColor = drawingCrystalsColor.WithH((startAngle + endAngle) / 2);
+            var color = drawingCrystalsColor.ToRgb();
             Geometry arcSegment = CreateRingSegment(_center, innerRadius, outerRadius, startAngle - 90, endAngle - 90);
 
             var brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color.R, color.G, color.B));
@@ -91,9 +91,8 @@ public class CrystalsColorPicker : Control
         drawingContext.DrawEllipse(Brushes.Black, null, thumbCenter, ThumbRadius + 1, ThumbRadius + 1);
         drawingContext.DrawEllipse(Brushes.White, null, thumbCenter, ThumbRadius, ThumbRadius);
 
-        var rgbColor = ColorConverter.HSVtoRGB(Color);
         var internalThumbBrush =
-            new SolidColorBrush(System.Windows.Media.Color.FromRgb(rgbColor.R, rgbColor.G, rgbColor.B));
+            new SolidColorBrush(Color.ToRgb());
         internalThumbBrush.Freeze();
         drawingContext.DrawEllipse(internalThumbBrush, null, thumbCenter, ThumbRadius - 3, ThumbRadius - 3);
     }
@@ -177,7 +176,7 @@ public class CrystalsColorPicker : Control
             if (hue < 0) hue += 360.0;
 
             _hue = hue;
-            Color.H = (float)_hue;
+            Color = new CrystalsColor((float)hue, 1, 1);
         }
         
         InvalidateVisual();
@@ -187,12 +186,5 @@ public class CrystalsColorPicker : Control
             OnColorChanged?.Invoke(Color);
             _throttleStopwatch.Restart();
         }
-    }
-
-    private void SetColor(CrystalsColor color)
-    {
-        _hue = color.H;
-        Color.H = (float)_hue;
-        InvalidateVisual();
     }
 }

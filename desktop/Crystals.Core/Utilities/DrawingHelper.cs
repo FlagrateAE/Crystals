@@ -15,7 +15,7 @@ public static class DrawingHelper
 
         icon.CopyPixels(pixels, stride, 0);
 
-        var newRgb = ColorConverter.HSVtoRGB(newColor);
+        var newRgb = newColor.ToRgb();
         byte newB = newRgb.B;
         byte newG = newRgb.G;
         byte newR = newRgb.R;

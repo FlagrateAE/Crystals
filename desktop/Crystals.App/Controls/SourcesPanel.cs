@@ -6,7 +6,6 @@ using Crystals.Core.Models;
 using Crystals.Core.Sources;
 using Crystals.Core.Utilities;
 using Color = System.Windows.Media.Color;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 using Image = Wpf.Ui.Controls.Image;
 using TextBlock = Wpf.Ui.Controls.TextBlock;
 
@@ -107,8 +106,7 @@ public sealed class SourcesPanel : Border, IDisposable
 
             var focusedSource = _engine.FocusedSource!;
             var currentSourceModel = focusedSource.CurrentSource!;
-            var colorRgb = ColorConverter.HSVtoRGB(focusedSource.CurrentColor);
-            _borderBrush.Color = Color.FromArgb(255, colorRgb.R, colorRgb.G, colorRgb.B);
+            _borderBrush.Color = focusedSource.CurrentColor.ToRgb();
             _image.Source = currentSourceModel.Image.ToBitmapSource();
             _title.Text = currentSourceModel.Name;
             _description.Text = currentSourceModel.Description;

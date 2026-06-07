@@ -11,7 +11,7 @@ public class MusicSource(WebMediaService service) : ISource
     public int FocusPriority => 1;
     public BitmapSource Icon { get; } = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Sources/Music.png"));
     public ISourceModel? CurrentSource => service.CurrentMedia;
-    public CrystalsColor? CurrentColor { get; private set; }
+    public CrystalsColor CurrentColor { get; private set; }
     public event EventHandler<CrystalsColor>? OnColorChanged;
     
     public void Start()

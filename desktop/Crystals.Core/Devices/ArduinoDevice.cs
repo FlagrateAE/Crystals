@@ -1,7 +1,6 @@
 using System.IO.Ports;
 using System.Windows.Media.Imaging;
 using Crystals.Core.Models;
-using ColorConverter = Crystals.Core.Utilities.ColorConverter;
 
 namespace Crystals.Core.Devices;
 
@@ -44,13 +43,13 @@ public class ArduinoDevice(string portName, int baudRate) : IDevice
 
     public void SetColor(CrystalsColor color)
     {
-        var rgb = ColorConverter.HSVtoRGB(color);
+        var rgb = color.ToRgb();
         SendData($"{rgb.R}.{rgb.G}.{rgb.B}.");
     }
 
     public void SetColorSmooth(CrystalsColor color)
     {
-        var rgb = ColorConverter.HSVtoRGB(color);
+        var rgb = color.ToRgb();
         SendData($"{rgb.R}.{rgb.G}.{rgb.B}~");
         Console.WriteLine($"[ArduinoDevice] Set color to {color.ToStringRGB()}");
     }
