@@ -27,11 +27,13 @@ public class CrystalsColorPicker : Control
     public event Action<CrystalsColor>? OnColorChanged;
 
     private const double ThicknessRatio = 0.5;
+    private const double InnerWhiteRadius = 30;
     private const double ThumbRadius = 8.0;
-    private bool _isDragging;
+    private const int ThrottleIntervalMs = 50;
 
     private readonly Stopwatch _throttleStopwatch = new();
-    private const int ThrottleIntervalMs = 50;
+    private bool _isDragging;
+    private Point _center;
 
     public CrystalsColorPicker()
     {
@@ -51,7 +53,7 @@ public class CrystalsColorPicker : Control
         double size = Math.Min(RenderSize.Width, RenderSize.Height);
         if (size <= 0) return;
 
-        Point center = new Point(RenderSize.Width / 2, RenderSize.Height / 2);
+        _center = new Point(RenderSize.Width / 2, RenderSize.Height / 2);
         double outerRadius = (size / 2) - ThumbRadius;
         double innerRadius = outerRadius * (1 - ThicknessRatio);
 
@@ -67,7 +69,7 @@ public class CrystalsColorPicker : Control
 
             drawingCrystalsColor.H = (startAngle + endAngle) / 2;
             var color = ColorConverter.HSVtoRGB(drawingCrystalsColor);
-            Geometry arcSegment = CreateRingSegment(center, innerRadius, outerRadius, startAngle - 90, endAngle - 90);
+            Geometry arcSegment = CreateRingSegment(_center, innerRadius, outerRadius, startAngle - 90, endAngle - 90);
 
             var brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(color.R, color.G, color.B));
             brush.Freeze();
@@ -77,11 +79,13 @@ public class CrystalsColorPicker : Control
             drawingContext.DrawGeometry(brush, pen, arcSegment);
         }
 
+        drawingContext.DrawEllipse(Brushes.White, null, _center, InnerWhiteRadius, InnerWhiteRadius);
+
         double thumbAngleRad = (_hue - 90) * Math.PI / 180.0;
         double middleRadius = (innerRadius + outerRadius) / 2;
         Point thumbCenter = new Point(
-            center.X + middleRadius * Math.Cos(thumbAngleRad),
-            center.Y + middleRadius * Math.Sin(thumbAngleRad)
+            _center.X + middleRadius * Math.Cos(thumbAngleRad),
+            _center.Y + middleRadius * Math.Sin(thumbAngleRad)
         );
 
         drawingContext.DrawEllipse(Brushes.Black, null, thumbCenter, ThumbRadius + 1, ThumbRadius + 1);
@@ -123,8 +127,10 @@ public class CrystalsColorPicker : Control
         if (e.ChangedButton == MouseButton.Left)
         {
             CaptureMouse();
+
             _isDragging = true;
-            UpdateHueFromMouse(e.GetPosition(this), forceUpdate: true);
+            UpdateColorFromMouse(e.GetPosition(this), forceUpdate: true);
+
             e.Handled = true;
         }
     }
@@ -134,7 +140,7 @@ public class CrystalsColorPicker : Control
         base.OnMouseMove(e);
         if (_isDragging)
         {
-            UpdateHueFromMouse(e.GetPosition(this), forceUpdate: false);
+            UpdateColorFromMouse(e.GetPosition(this), forceUpdate: false);
             e.Handled = true;
         }
     }
@@ -146,24 +152,34 @@ public class CrystalsColorPicker : Control
         {
             _isDragging = false;
             ReleaseMouseCapture();
-            UpdateHueFromMouse(e.GetPosition(this), forceUpdate: true);
+            UpdateColorFromMouse(e.GetPosition(this), forceUpdate: true);
             e.Handled = true;
         }
     }
 
-    private void UpdateHueFromMouse(Point mousePos, bool forceUpdate)
+    private void UpdateColorFromMouse(Point mousePos, bool forceUpdate)
     {
         var center = new Point(RenderSize.Width / 2, RenderSize.Height / 2);
-        var delta = mousePos - center;
 
-        var angleDeg = Math.Atan2(delta.Y, delta.X) * 180.0 / Math.PI;
+        var isWhiteCircle = (mousePos - center).Length < InnerWhiteRadius;
 
-        var hue = angleDeg + 90.0;
-        if (hue < 0) hue += 360.0;
+        if (isWhiteCircle)
+        {
+            Color = CrystalsColor.White;
+        }
+        else
+        {
+            var delta = mousePos - center;
 
-        _hue = hue;
-        Color.H = (float)_hue;
+            var angleDeg = Math.Atan2(delta.Y, delta.X) * 180.0 / Math.PI;
 
+            var hue = angleDeg + 90.0;
+            if (hue < 0) hue += 360.0;
+
+            _hue = hue;
+            Color.H = (float)_hue;
+        }
+        
         InvalidateVisual();
 
         if (forceUpdate || _throttleStopwatch.ElapsedMilliseconds >= ThrottleIntervalMs)
