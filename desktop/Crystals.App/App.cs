@@ -48,6 +48,7 @@ public class App : Application
                 services.AddHostedService<HotkeyService>();
 
                 services.AddSingleton<IMiddleware, VibranceMiddleware>();
+                services.AddSingleton<IMiddleware, WhiteBlueMiddleware>();
 
                 services.AddSingleton(_ => new WebMediaService(WebMediaPort));
                 services.AddHostedService(p => p.GetRequiredService<WebMediaService>());
