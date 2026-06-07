@@ -3,7 +3,7 @@ using Crystals.Core.Models;
 namespace Crystals.Core.Middlewares;
 
 // Makes the white color slightly blueish for proper eye perception
-public class WhiteBlueMiddleware : IMiddleware
+public class BlueishPostprocessor : IPostprocessor
 {
     public CrystalsColor Process(CrystalsColor color)
     {

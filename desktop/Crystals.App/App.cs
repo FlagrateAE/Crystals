@@ -4,6 +4,7 @@ using Crystals.App.Windows;
 using Crystals.Core;
 using Crystals.Core.Devices;
 using Crystals.Core.Middlewares;
+using Crystals.Core.Middlewares.Preprocessors;
 using Crystals.Core.Services;
 using Crystals.Core.Sources;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,8 +48,9 @@ public class App : Application
                 services.AddHostedService<TrayIconService>();
                 services.AddHostedService<HotkeyService>();
 
-                services.AddSingleton<IMiddleware, VibranceMiddleware>();
-                // services.AddSingleton<IMiddleware, WhiteBlueMiddleware>();
+                services.AddSingleton<IPreprocessor, VibrancePreprocessor>();
+
+                services.AddSingleton<IPostprocessor, BlueishPostprocessor>();
 
                 services.AddSingleton(_ => new WebMediaService(WebMediaPort));
                 services.AddHostedService(p => p.GetRequiredService<WebMediaService>());

@@ -21,7 +21,6 @@ public static class BitmapExtenstions
         }
         finally
         {
-            // Crucial: Delete the HBitmap handle to prevent memory leaks!
             DeleteObject(hBitmap);
         }
     }

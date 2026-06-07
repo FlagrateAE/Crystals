@@ -2,7 +2,7 @@ using Crystals.Core.Models;
 
 namespace Crystals.Core.Middlewares;
 
-public interface IMiddleware
+public interface IPostprocessor
 {
     public CrystalsColor Process(CrystalsColor color);
 }
