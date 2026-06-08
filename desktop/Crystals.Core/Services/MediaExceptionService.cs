@@ -2,32 +2,28 @@ using System.Text.Json;
 using Crystals.Core.Models;
 using Crystals.Core.Models.SourceModels;
 using Microsoft.Extensions.Hosting;
-using WinRT.Interop;
 
 namespace Crystals.Core.Services;
 
 public class MediaExceptionService : BackgroundService
 {
-    private record MediaException(string Name, string Description, CrystalsColor SpecialColor);
-
     private const string DeveloperName = "Flagrate";
     private const string AppName = "Crystals";
     private const string FileName = "MediaExceptions.json";
 
     private string _filePath = "";
-    private List<MediaException> _data;
+    private Dictionary<string, CrystalsColor> _data;
 
     public bool IsInExceptions(Media media, out CrystalsColor specialColor)
     {
-        var record = _data.FirstOrDefault(e => e.Name == media.Name && e.Description == media.Description);
-        specialColor = record?.SpecialColor ?? CrystalsColor.White;
-        return record != null;
+        specialColor = CrystalsColor.White;
+        return _data.TryGetValue(media.ToString(), out specialColor);
     }
 
     public void AddException(Media media, CrystalsColor specialColor)
     {
-        Console.WriteLine($"[MediaExceptionService] Adding exception for {media.Name} by {media.Description}");
-        _data.Add(new MediaException(media.Name, media.Description, specialColor));
+        Console.WriteLine($"[MediaExceptionService] Adding exception for {media}");
+        _data[media.ToString()] = specialColor;
         SaveRecords(_data);
     }
 
@@ -49,7 +45,7 @@ public class MediaExceptionService : BackgroundService
         return Task.CompletedTask;
     }
 
-    private List<MediaException> LoadRecords()
+    private Dictionary<string, CrystalsColor> LoadRecords()
     {
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
@@ -61,7 +57,7 @@ public class MediaExceptionService : BackgroundService
             }
 
             var jsonString = File.ReadAllText(_filePath);
-            return JsonSerializer.Deserialize<List<MediaException>>(jsonString, options) ?? [];
+            return JsonSerializer.Deserialize<Dictionary<string, CrystalsColor>>(jsonString, options) ?? [];
         }
         catch (Exception ex)
         {
@@ -70,12 +66,12 @@ public class MediaExceptionService : BackgroundService
         }
     }
 
-    private void SaveRecords(List<MediaException> records)
+    private void SaveRecords(Dictionary<string, CrystalsColor> data)
     {
         var options = new JsonSerializerOptions { WriteIndented = true, PropertyNameCaseInsensitive = true };
         try
         {
-            var jsonString = JsonSerializer.Serialize(records, options);
+            var jsonString = JsonSerializer.Serialize(data, options);
             File.WriteAllText(_filePath, jsonString);
         }
         catch (Exception ex)

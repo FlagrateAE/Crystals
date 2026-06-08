@@ -41,7 +41,7 @@ public class MusicSource(WebMediaService webService, MediaExceptionService excep
         }
 
         CurrentColor = color;
-        Console.WriteLine($"[MusicSource] Now playing: {media.Name} by {media.Description}");
+        Console.WriteLine($"[MusicSource] Now playing: {media}");
         OnColorChanged?.Invoke(this, color);
     }
 }
