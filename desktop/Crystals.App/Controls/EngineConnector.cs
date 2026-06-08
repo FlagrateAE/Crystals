@@ -23,7 +23,7 @@ public class EngineConnector : Grid, IDisposable
     private readonly Canvas _linesCanvas;
     private readonly Image _icon;
     private readonly BitmapSource _defaultIconSource;
-    private readonly BitmapSource _manualOverrideResetIconSource;
+    private readonly BitmapSource _manualOverrideSaveIconSource;
     private Line _sourceLine;
     private Line _deviceLine;
 
@@ -34,7 +34,7 @@ public class EngineConnector : Grid, IDisposable
         engine.OnManualOverride += OnEngineManualOverride;
 
         _defaultIconSource = BitmapFrame.Create(ImageLoader.IconUris.Crystals);
-        _manualOverrideResetIconSource = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Reset.png"));
+        _manualOverrideSaveIconSource = BitmapFrame.Create(new Uri("pack://application:,,,/Resources/Save.png"));
 
         _icon = new Image
         {
@@ -76,7 +76,7 @@ public class EngineConnector : Grid, IDisposable
     private void OnEngineManualOverride(CrystalsColor color)
     {
         if (_engine.FocusedSource == null) return;
-        _icon.Source = _manualOverrideResetIconSource;
+        _icon.Source = _manualOverrideSaveIconSource;
         _deviceLineBrush.Color = color.ToRgb();
     }
 
@@ -84,7 +84,7 @@ public class EngineConnector : Grid, IDisposable
     {
         if (_icon.Source == _defaultIconSource) return;
 
-        _engine.ResetManualOverride();
+        _engine.SaveManualOverride();
         _icon.Source = _defaultIconSource;
     }
 

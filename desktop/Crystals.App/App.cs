@@ -55,6 +55,9 @@ public class App : Application
                 services.AddSingleton(_ => new WebMediaService(WebMediaPort));
                 services.AddHostedService(p => p.GetRequiredService<WebMediaService>());
 
+                services.AddSingleton<MediaExceptionService>();
+                services.AddHostedService(p => p.GetRequiredService<MediaExceptionService>());
+
                 services.AddSingleton<MysticLightService>();
                 services.AddHostedService(p => p.GetRequiredService<MysticLightService>());
 

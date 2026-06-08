@@ -42,6 +42,8 @@
     <Resource Include="Resources\Reset.png" />
     <None Remove="Resources\Error.png" />
     <Resource Include="Resources\Error.png" />
+    <None Remove="Resources\Save.png" />
+    <Resource Include="Resources\Save.png" />
   </ItemGroup>
 
 </Project>

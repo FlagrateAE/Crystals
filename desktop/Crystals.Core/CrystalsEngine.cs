@@ -22,20 +22,23 @@ public class CrystalsEngine(
     public event Action<ISource?, CrystalsColor>? OnStateChanged;
     public event Action<CrystalsColor>? OnManualOverride;
 
+    private CrystalsColor _color;
+
     public void ManualOverride(CrystalsColor color)
     {
         SetColor(color);
         OnManualOverride?.Invoke(color);
     }
 
-    public void ResetManualOverride()
+    public void SaveManualOverride()
     {
-        var resetColor = FocusedSource!.CurrentColor;
-
-        resetColor = preprocessors.Aggregate(resetColor, (current, preprocessor) => preprocessor.Process(current));
-
-        SetColorSmooth(resetColor);
-        OnStateChanged?.Invoke(null, resetColor);
+        if (FocusedSource is MusicSource musicSource)
+        {
+            musicSource.AddException(_color);
+        }
+        
+        SetColorSmooth(_color);
+        OnStateChanged?.Invoke(null, _color);
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -104,12 +107,14 @@ public class CrystalsEngine(
     private void SetColor(CrystalsColor color)
     {
         Console.WriteLine($"[ENGINE] Setting color {color}");
+        _color = color;
         
         color = postprocessors.Aggregate(color, (current, postprocessor) => postprocessor.Process(current));
         
         foreach (var device in Devices)
         {
             device.SetColor(color);
+            
         }
 
         Console.WriteLine("");
@@ -118,6 +123,7 @@ public class CrystalsEngine(
     private void SetColorSmooth(CrystalsColor color)
     {
         Console.WriteLine($"[ENGINE] Setting color {color}");
+        _color = color;
         
         color = postprocessors.Aggregate(color, (current, postprocessor) => postprocessor.Process(current));
         

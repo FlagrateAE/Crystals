@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Windows.Media;
 using Wacton.Unicolour;
 
@@ -12,7 +13,8 @@ public readonly struct CrystalsColor : IEquatable<CrystalsColor>
     private readonly Color? _cachedRgb = null;
 
     private readonly float _vibrance;
-
+    
+    [JsonConstructor]
     public CrystalsColor(float h, float s, float v)
     {
         H = Math.Clamp(h, 0f, 360f);
