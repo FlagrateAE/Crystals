@@ -117,8 +117,8 @@ public class WebMediaService(int port) : BackgroundService
         using var managedStream = new MemoryStream(data);
         using var bitmap = new Bitmap(managedStream);
         var processedBitmap = new Bitmap(bitmap);
-        return new Media(dto.Title, dto.Artist, processedBitmap);
+        return new Media(dto.Title, dto.Artist, dto.Album, processedBitmap);
     }
 
-    private record WebMediaDto(string Title, string Artist, string Thumbnail);
+    private record WebMediaDto(string Title, string Artist, string Album, string Thumbnail);
 }

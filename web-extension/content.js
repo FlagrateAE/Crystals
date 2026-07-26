@@ -7,6 +7,7 @@ function extractMediaData() {
     let payload = {
         Title: document.title.replace(" - Spotify", "").trim(),
         Artist: "Unknown Artist",
+        Album: "Unknown Album",
         Thumbnail: ""
     };
 
@@ -15,7 +16,8 @@ function extractMediaData() {
         const meta = navigator.mediaSession.metadata;
         payload.Title = meta.title || payload.Title;
         payload.Artist = meta.artist || payload.Artist;
-        
+        payload.Album = meta.album || payload.Album;
+
         if (meta.artwork && meta.artwork.length > 0) {
             payload.Thumbnail = meta.artwork[meta.artwork.length - 1].src;
         }
@@ -23,6 +25,7 @@ function extractMediaData() {
         // Approach 2: DOM Scraping Fallback specifically for Spotify's web player structure
         const titleEl = document.querySelector('[data-testid="context-item-info-title"]');
         const artistEl = document.querySelector('[data-testid="context-item-info-artist"]');
+        const albumEl = document.querySelector('[data-testid="context-item-info-album-name"]');
         const imgEl = document.querySelector('img[data-testid="cover-art-image"]');
 
         if (titleEl) payload.Title = titleEl.textContent;
@@ -35,45 +38,45 @@ function extractMediaData() {
 
 function notifyChange(trackData) {
     if (trackData.Artist.trim() === "Unknown Artist") return;
-    
+
     console.log(`[Thousand Eyes] Song change detected:`, trackData);
-    
+
     chrome.runtime.sendMessage({
         type: "SONG_CHANGED",
         payload: trackData
     }, (response) => {
         if (chrome.runtime.lastError) {
-             console.error("[Thousand Eyes] Error sending message to background:", chrome.runtime.lastError);
+            console.error("[Thousand Eyes] Error sending message to background:", chrome.runtime.lastError);
         } else {
-             console.log("[Thousand Eyes] Background script acknowledged:", response);
+            console.log("[Thousand Eyes] Background script acknowledged:", response);
         }
     });
 }
 
 const titleObserver = new MutationObserver(() => {
     clearTimeout(trackChangeTimeout);
-    
+
     trackChangeTimeout = setTimeout(() => {
         const trackData = extractMediaData();
 
         const currentHash = `${trackData.Title}-${trackData.Artist}`;
-        
+
         if (currentHash !== lastTrackHash && trackData.Title.trim() !== "") {
             lastTrackHash = currentHash;
             notifyChange(trackData);
         }
-    }, 500); 
+    }, 500);
 });
 
 const targetTitle = document.querySelector('title');
 if (targetTitle) {
     console.log("[Thousand Eyes] Observing document title for changes.");
-    titleObserver.observe(targetTitle, { childList: true });
-    
+    titleObserver.observe(targetTitle, {childList: true});
+
     setTimeout(() => {
         const trackData = extractMediaData();
         lastTrackHash = `${trackData.Title}-${trackData.Artist}`;
-        if(trackData.Title) notifyChange(trackData);
+        if (trackData.Title) notifyChange(trackData);
     }, 1000);
 } else {
     console.warn("[Thousand Eyes] No <title> element found to observe.");

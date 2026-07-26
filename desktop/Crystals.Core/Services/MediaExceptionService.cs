@@ -17,14 +17,16 @@ public class MediaExceptionService : BackgroundService
     public bool IsInExceptions(Media media, out CrystalsColor specialColor)
     {
         specialColor = CrystalsColor.White;
-        return _data.TryGetValue(media.ToString(), out specialColor);
+        var key = $"{media.Description} - {media.Album}";
+        return _data.TryGetValue(key, out specialColor);
     }
 
     public void AddException(Media media, CrystalsColor specialColor)
     {
-        Console.WriteLine($"[MediaExceptionService] Adding exception for {media}");
-        _data[media.ToString()] = specialColor;
+        var key = $"{media.Description} - {media.Album}";
+        _data[key] = specialColor;
         SaveRecords(_data);
+        Console.WriteLine($"[MediaExceptionService] Added exception for {key}");
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
