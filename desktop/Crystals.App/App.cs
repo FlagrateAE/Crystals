@@ -17,7 +17,7 @@ namespace Crystals.App;
 
 public class App : Application
 {
-    private const int WebMediaPort = 4030;
+    private const int WebMediaPort = 5663;
     private const string ArduinoPort = "COM3";
     private const int ArduinoBaudRate = 9600;
 

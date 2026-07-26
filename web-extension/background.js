@@ -1,6 +1,6 @@
 console.log("[Thousand Eyes] Service worker loaded and ready.");
 
-const NET_LISTENER_URL = "http://localhost:4030/";
+const NET_LISTENER_URL = "http://localhost:5663/";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("[Thousand Eyes] Received message from content script:", message);
