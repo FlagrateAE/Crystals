@@ -49,9 +49,7 @@ public class App : Application
                 services.AddHostedService<HotkeyService>();
 
                 services.AddSingleton<IPreprocessor, VibrancePreprocessor>();
-
-                services.AddSingleton<IPostprocessor, BlueishPostprocessor>();
-
+                
                 services.AddSingleton(_ => new WebMediaService(WebMediaPort));
                 services.AddHostedService(p => p.GetRequiredService<WebMediaService>());
 

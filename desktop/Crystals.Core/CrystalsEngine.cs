@@ -10,7 +10,6 @@ namespace Crystals.Core;
 public class CrystalsEngine(
     IEnumerable<ISource> sources,
     IEnumerable<IPreprocessor> preprocessors,
-    IEnumerable<IPostprocessor> postprocessors,
     IEnumerable<IDevice> devices
 ) : BackgroundService
 {
@@ -23,23 +22,6 @@ public class CrystalsEngine(
     public event Action<CrystalsColor>? OnManualOverride;
 
     private CrystalsColor _color;
-
-    public void ManualOverride(CrystalsColor color)
-    {
-        SetColor(color);
-        OnManualOverride?.Invoke(color);
-    }
-
-    public void SaveManualOverride()
-    {
-        if (FocusedSource is MusicSource musicSource)
-        {
-            musicSource.AddException(_color);
-        }
-        
-        SetColorSmooth(_color);
-        OnStateChanged?.Invoke(null, _color);
-    }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -74,7 +56,7 @@ public class CrystalsEngine(
         var focusedState = TryFocusOn(source);
 
         if (focusedState == FocusedState.FailedLowPriority) return;
-        
+
         color = preprocessors.Aggregate(color, (current, preprocessor) => preprocessor.Process(current));
 
         SetColorSmooth(color);
@@ -103,18 +85,32 @@ public class CrystalsEngine(
 
         void FocusOn(ISource s) => FocusedSource = s;
     }
+    
+    public void ManualOverride(CrystalsColor color)
+    {
+        SetColor(color);
+        OnManualOverride?.Invoke(color);
+    }
+
+    public void SaveManualOverride()
+    {
+        if (FocusedSource is MusicSource musicSource)
+        {
+            musicSource.AddException(_color);
+        }
+
+        SetColorSmooth(_color);
+        OnStateChanged?.Invoke(null, _color);
+    }
 
     private void SetColor(CrystalsColor color)
     {
         Console.WriteLine($"[ENGINE] Setting color {color}");
         _color = color;
-        
-        color = postprocessors.Aggregate(color, (current, postprocessor) => postprocessor.Process(current));
-        
+
         foreach (var device in Devices)
         {
             device.SetColor(color);
-            
         }
 
         Console.WriteLine("");
@@ -124,9 +120,8 @@ public class CrystalsEngine(
     {
         Console.WriteLine($"[ENGINE] Setting color {color}");
         _color = color;
-        
-        color = postprocessors.Aggregate(color, (current, postprocessor) => postprocessor.Process(current));
-        
+
+
         foreach (var device in Devices)
         {
             device.SetColorSmooth(color);

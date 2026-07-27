@@ -1,3 +1,4 @@
+using Crystals.Core.Models;
 using HidSharp;
 using Microsoft.Extensions.Hosting;
 
@@ -32,7 +33,7 @@ public class MysticLightService : BackgroundService
         IsInitialized = true;
         return Task.CompletedTask;
     }
-
+    
     public void SetStaticColor(Ms1565Zone zone, byte r, byte g, byte b)
     {
         // --- PACKET 1: INITIALIZATION ---
